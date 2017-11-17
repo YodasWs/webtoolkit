@@ -1,7 +1,7 @@
 {
 	"name": "webtoolkit",
 	"private": true,
-	"version": "1.0.5",
+	"version": "1.0.5.1",
 	"description": "Sam Grundman's Super Awesome Gulp Web Development Toolset",
 	"main": "gulpfile.js",
 	"repository": {

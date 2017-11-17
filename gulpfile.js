@@ -515,8 +515,8 @@ gulp.task('generate:page', gulp.series(
 		done()
 	},
 	plugins.cli([
-		`mkdir -pv ./src/pages/${argv.section}/${argv.name}`,
-		`touch -a ./src/pages/${argv.section}/${argv.name}/${argv.name}.scss`,
+		`mkdir -pv ./src/pages/${argv.section}${argv.name}`,
+		`touch -a ./src/pages/${argv.section}${argv.name}/${argv.name}.scss`,
 	]),
 	() => {
 		const str = `<h2>${argv.name}</h2>\n`
