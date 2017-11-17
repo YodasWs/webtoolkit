@@ -16,6 +16,6 @@ gulp init
 
 ## Tasks
 
-``bash
+```bash
 gulp -?
 ```
