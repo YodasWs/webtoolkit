@@ -638,8 +638,9 @@ gulp.task('init', gulp.series(
 		const str = `* { box-sizing: border-box; }\n
 :root { font-family: 'Trebuchet MS', 'Open Sans', 'Helvetica Neue', sans-serif; }\n
 html {\n\theight: 100%;\n\twidth: 100%;\n\tbackground: whitesmoke;\n}\n
-body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tborder: solid black;\n\tborder-width: 0 1px;\n\tmin-height: 100%;\n\tbackground: white;\n
-\t> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
+body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 100%;\n\tbackground: white;\n\tborder: 0 none;\n
+	@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
+	> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
 a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 		return plugins.newFile(`main.scss`, str, { src: true })
@@ -655,8 +656,11 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 angular.module('${argv.name}', [\n\t'ngRoute',\n])
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
 	$locationProvider.html5Mode(true)
-	$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',\n\t})
-	.otherwise({redirectTo: '/'})
+	$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
+		controllerAs: '$ctrl',\n\t\tcontroller() {
+			angular.element('[ng-view]').attr('ng-view', 'pageHome')
+		},
+	})\n\t.otherwise({redirectTo: '/'})
 }])\n`
 		return plugins.newFile(`app.js`, str, { src: true })
 			.pipe(gulp.dest(`./src`))
@@ -718,6 +722,9 @@ body > nav {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-content: space
 		`git status`,
 	])
 ))
+
+gulp.task('compile:scss', gulp.series('compile:sass'))
+gulp.task('compile:css', gulp.series('compile:sass'))
 
 gulp.task('default', gulp.series(
 	'lint',
