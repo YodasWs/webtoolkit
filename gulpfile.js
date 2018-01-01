@@ -275,8 +275,9 @@ options = {
 'input-req-label': true,
 'label-req-for': true,
 'line-end-style': 'lf',
+'spec-char-escape': false, // buggy, no need to escape & in URL queries
 'table-req-caption': false,
-'table-req-header': false, // this is buggy in htmllint (https://github.com/htmllint/htmllint/issues/197)
+'table-req-header': false, // buggy, see https://github.com/htmllint/htmllint/issues/197
 'tag-bans': [
 	'acronym','applet','basefont','big','blink','center','font','frame','frameset','isindex','noframes','marquee',
 	'style',
