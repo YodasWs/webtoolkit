@@ -129,7 +129,8 @@ options = {
 	},
 	lintES:{
 		parserOptions: {
-			ecmaVersion: 2015,
+			sourceType: 'module',
+			ecmaVersion: 7,
 		},
 		env: {
 			browser: true,
@@ -346,10 +347,49 @@ options = {
 			'app.js',
 		]
 	},
+	replaceString:{
+		js:{
+			pattern:/\/\* site\.json \*\//,
+			replacement:()=>{
+				// Read site.json to build site!
+				const site = require('./src/site.json')
+				let js = []
+				site.pages.forEach((page) => {
+					site.modules.push(page.module)
+					;['module','routes'].forEach((k) => {
+						js.push(`${page.path}${k}.js`)
+					})
+				})
+				let newCode = `const site = ${JSON.stringify(site)}`
+				js.forEach((file) => {
+					newCode += `\nrequire('../src/pages/${file}')`
+				})
+				return newCode
+			},
+			options:{
+				notReplaced: false
+			}
+		}
+	},
+	webpack:{
+		logs:{
+			enabled:false
+		},
+		output:{
+			filename:'[name].js'
+		},
+		module:{
+			loaders:[
+				{ test:/\.json$/, loader:'json-loader' },
+			]
+		}
+	},
 	ssi:{
 		root: 'src'
 	}
 }
+
+plugins.named = require('vinyl-named')
 
 function runTasks(task) {
 	const fileType = task.fileType || 'static'
@@ -371,7 +411,7 @@ function runTasks(task) {
 	})
 
 	// Init Sourcemaps
-	stream = stream.pipe(plugins.sourcemaps.init())
+	// stream = stream.pipe(plugins.sourcemaps.init())
 
 	// Run each task
 	if (tasks.length) for (let i=0, k=tasks.length; i<k; i++) {
@@ -382,10 +422,10 @@ function runTasks(task) {
 	}
 
 	// Write Sourcemap
-	stream = stream.pipe(plugins.sourcemaps.write())
+	// stream = stream.pipe(plugins.sourcemaps.write())
 
 	// Output Files
-	return stream.pipe(gulp.dest(options.dest))
+	return stream.pipe(gulp.dest(task.dest || options.dest))
 }
 
 ;[
@@ -409,15 +449,35 @@ function runTasks(task) {
 		fileType: 'css'
 	},
 	{
-		name: 'compile:js',
+		name: 'build:js',
 		src: [
-			'src/**/*.js',
-			'!**/*.min.js',
-			'!**/min.js'
+			'src/app.js',
 		],
 		tasks: [
 			'lintES',
-			'sort',
+			'replaceString',
+		],
+		dest: 'build/',
+		fileType: 'js'
+	},
+	{
+		name: 'webpack',
+		src: [
+			'build/app.js',
+		],
+		tasks: [
+			'named',
+			'webpack',
+		],
+		dest: 'bundle/'
+	},
+	{
+		name: 'minify',
+		src: [
+			'bundle/app.js',
+		],
+		tasks: [
+			// 'sort',
 			'concat',
 			'compileJS',
 			'rmLines',
@@ -502,6 +562,12 @@ gulp.task('transfer:res', (done) => {
 })
 
 gulp.task('transfer-files', gulp.parallel('transfer:assets', 'transfer:res'))
+
+gulp.task('compile:js', gulp.series(
+	'build:js',
+	'webpack',
+	'minify'
+))
 
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'))
 
@@ -605,6 +671,8 @@ gulp.task('init', gulp.series(
 	plugins.cli([
 		`mkdir -pv ./src`,
 		`mkdir -pv ./docs`,
+		`mkdir -pv ./build`,
+		`mkdir -pv ./bundle`,
 		`mkdir -pv ./src/pages`,
 		`mkdir -pv ./src/includes`,
 		`mkdir -pv ./src/includes/header`,
@@ -652,8 +720,7 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 			done()
 			return
 		}
-		const str = `'use strict';\n
-angular.module('${argv.name}', [\n\t'ngRoute',\n])
+		const str = `angular.module('${argv.name}', [\n\t'ngRoute',\n])
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
 	$locationProvider.html5Mode(true)
 	$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
