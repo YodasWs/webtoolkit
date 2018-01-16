@@ -7,8 +7,9 @@ const fs = require('fs')
 const packageJson = JSON.parse(fs.readFileSync('./package.json'))
 
 function camelCase(name) {
-	name = name.split('/').join('-')
-	name = name.split('-').filter((e) => {
+	name.split(/\s+/).join('-')
+	.split('/').join('-')
+	.split('-').filter((e) => {
 		return e !== '' && e !== null && e !== undefined
 	})
 	if (name.length > 1) {
@@ -308,6 +309,7 @@ options = {
 		css:{
 			filters:[
 				/^\s*$/,
+				/^\s*@import\b/,
 			]
 		},
 		js:{
@@ -349,14 +351,16 @@ options = {
 	},
 	replaceString:{
 		js:{
-			pattern:/\/\* site\.json \*\//,
+			pattern:/\/\* app\.json \*\//,
 			replacement:()=>{
-				// Read site.json to build site!
-				const site = require('./src/site.json')
+				// Read app.json to build site!
+				const site = require('./src/app.json')
+				if (!site.modules) site.modules = []
 				let js = []
 				site.pages.forEach((page) => {
-					site.modules.push(page.module)
+					site.modules.push(page.module || camelCase(`page${page.path}`))
 					;['module','routes'].forEach((k) => {
+						if (page.path.substr(-1) !== '/') page.path += '/'
 						js.push(`${page.path}${k}.js`)
 					})
 				})
@@ -461,7 +465,7 @@ function runTasks(task) {
 		fileType: 'js'
 	},
 	{
-		name: 'webpack',
+		name: 'webpack:js',
 		src: [
 			'build/app.js',
 		],
@@ -469,16 +473,15 @@ function runTasks(task) {
 			'named',
 			'webpack',
 		],
-		dest: 'bundle/'
+		dest: 'bundle/',
+		fileType: 'js'
 	},
 	{
-		name: 'minify',
+		name: 'minify:js',
 		src: [
 			'bundle/app.js',
 		],
 		tasks: [
-			// 'sort',
-			'concat',
 			'compileJS',
 			'rmLines',
 		],
@@ -563,10 +566,14 @@ gulp.task('transfer:res', (done) => {
 
 gulp.task('transfer-files', gulp.parallel('transfer:assets', 'transfer:res'))
 
-gulp.task('compile:js', gulp.series(
+gulp.task('bundle:js', gulp.series(
 	'build:js',
-	'webpack',
-	'minify'
+	'webpack:js'
+))
+
+gulp.task('compile:js', gulp.series(
+	'bundle:js',
+	'minify:js'
 ))
 
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'))
@@ -622,7 +629,7 @@ angular.module('${module}')
 		return plugins.newFile(`routes.js`, str, { src: true })
 			.pipe(gulp.dest(`./src/pages/${argv.section}${argv.name}`))
 	},
-	// TODO: Add to app.js
+	// TODO: Add to app.json
 	plugins.cli([
 		`git status`,
 	])
@@ -658,7 +665,7 @@ angular.module('${module}')
 		return plugins.newFile(`${argv.name}.js`, str, { src: true })
 			.pipe(gulp.dest(`./src/components/${argv.section}${argv.name}`))
 	},
-	// TODO: Add to app.js
+	// TODO: Add to app.json
 	plugins.cli([
 		`git status`,
 	])
@@ -720,7 +727,7 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 			done()
 			return
 		}
-		const str = `angular.module('${argv.name}', [\n\t'ngRoute',\n])
+		const str = `/* app.json */\nangular.module('${argv.name}', site.modules)
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
 	$locationProvider.html5Mode(true)
 	$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
@@ -730,6 +737,22 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 	})\n\t.otherwise({redirectTo: '/'})
 }])\n`
 		return plugins.newFile(`app.js`, str, { src: true })
+			.pipe(gulp.dest(`./src`))
+	},
+
+	(done) => {
+		if (fileExists.sync('src/app.json')) {
+			done()
+			return
+		}
+		const str = JSON.stringify({
+			"name": packageJson.name,
+			"sections":[
+			],
+			"pages":[
+			]
+		})
+		return plugins.newFile(`app.json`, str, { src: true })
 			.pipe(gulp.dest(`./src`))
 	},
 

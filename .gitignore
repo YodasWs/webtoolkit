@@ -2,6 +2,10 @@
 *.swp
 *~
 
+# Build directories
+bundle
+build
+
 # Logs
 logs
 *.log
