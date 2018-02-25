@@ -2153,12 +2153,12 @@ gulp-eslint@^3.0.1:
     eslint "^3.0.0"
     gulp-util "^3.0.6"
 
-gulp-file@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/gulp-file/-/gulp-file-0.3.0.tgz#e8c4d763f126fb3332fc416e3d1ef46ed67d8d0d"
+gulp-file@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/gulp-file/-/gulp-file-0.4.0.tgz#451356a2ac5089c6db91a0444252a0543657006b"
   dependencies:
-    gulp-util "^2.2.14"
     through2 "^0.4.1"
+    vinyl "^2.1.0"
 
 gulp-html-lint@^0.0.2:
   version "0.0.2"
@@ -2306,7 +2306,7 @@ gulp-util@>=2.2.0, "gulp-util@>=3.0.0 <3.1.0-0", gulp-util@^3.0, gulp-util@^3.0.
     through2 "^2.0.0"
     vinyl "^0.5.0"
 
-gulp-util@^2.2.14, gulp-util@^2.2.19:
+gulp-util@^2.2.19:
   version "2.2.20"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-2.2.20.tgz#d7146e5728910bd8f047a6b0b1e549bc22dbd64c"
   dependencies:
@@ -5076,7 +5076,7 @@ vinyl@^0.2.1:
   dependencies:
     clone-stats "~0.0.1"
 
-vinyl@^2.0.0:
+vinyl@^2.0.0, vinyl@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/vinyl/-/vinyl-2.1.0.tgz#021f9c2cf951d6b939943c89eb5ee5add4fd924c"
   dependencies:

@@ -718,12 +718,14 @@ gulp.task('init', gulp.series(
 		`mkdir -pv ./src/includes/header`,
 	]),
 
-	(done) => {
-		if (fileExists.sync('src/index.html')) {
-			done()
-			return
-		}
-		const str = `<!DOCTYPE html>
+	gulp.parallel(
+
+		(done) => {
+			if (fileExists.sync('src/index.html')) {
+				done()
+				return
+			}
+			const str = `<!DOCTYPE html>
 <html lang="en-US" ng-app="${camelCase(argv.name)}">
 <head>
 <!--#include file="includes/head-includes.html" -->
@@ -734,97 +736,97 @@ gulp.task('init', gulp.series(
 <main ng-view></main>
 </body>
 </html>\n`
-		return plugins.newFile(`index.html`, str, { src: true })
-			.pipe(gulp.dest(`./src`))
-	},
+			return plugins.newFile(`index.html`, str, { src: true })
+				.pipe(gulp.dest(`./src`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/main.scss')) {
-			done()
-			return
-		}
-		const str = `* { box-sizing: border-box; }\n
+		(done) => {
+			if (fileExists.sync('src/main.scss')) {
+				done()
+				return
+			}
+			const str = `* { box-sizing: border-box; }\n
 :root { font-family: 'Trebuchet MS', 'Open Sans', 'Helvetica Neue', sans-serif; }\n
 html {\n\theight: 100%;\n\twidth: 100%;\n\tbackground: whitesmoke;\n}\n
 body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 100%;\n\tbackground: white;\n\tborder: 0 none;\n
-	@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
-	> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
+@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
+> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
 a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
-		return plugins.newFile(`main.scss`, str, { src: true })
-			.pipe(gulp.dest(`./src`))
-	},
-
-	(done) => {
-		if (fileExists.sync('src/app.js')) {
-			done()
-			return
-		}
-		const str = `/* app.json */\nangular.module('${camelCase(argv.name)}', modules)
-.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
-	$locationProvider.html5Mode(false)
-	$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
-		controllerAs: '$ctrl',\n\t\tcontroller() {
-			angular.element('[ng-view]').attr('ng-view', 'pageHome')
+			return plugins.newFile(`main.scss`, str, { src: true })
+				.pipe(gulp.dest(`./src`))
 		},
-	})\n\t.otherwise({redirectTo: '/'})
+
+		(done) => {
+			if (fileExists.sync('src/app.js')) {
+				done()
+				return
+			}
+			const str = `/* app.json */\nangular.module('${camelCase(argv.name)}', modules)
+.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
+\t$locationProvider.html5Mode(false)
+\t$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
+\t\tcontrollerAs: '$ctrl',\n\t\tcontroller() {
+\t\t\tangular.element('[ng-view]').attr('ng-view', 'pageHome')
+\t\t},
+\t})\n\t.otherwise({redirectTo: '/'})
 }])\n`
-		return plugins.newFile(`app.js`, str, { src: true })
-			.pipe(gulp.dest(`./src`))
-	},
+			return plugins.newFile(`app.js`, str, { src: true })
+				.pipe(gulp.dest(`./src`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/app.json')) {
-			done()
-			return
-		}
-		const site = {
-			"name": packageJson.name,
-			"components":[
-			],
-			"sections":[
-			],
-			"modules":[
-				'ngRoute',
-			],
-			"pages":[
-			],
-		}
-		return plugins.newFile(`app.json`, JSON.stringify(site), { src: true })
-			.pipe(gulp.dest(`./src`))
-	},
+		(done) => {
+			if (fileExists.sync('src/app.json')) {
+				done()
+				return
+			}
+			const site = {
+				"name": packageJson.name,
+				"components":[
+				],
+				"sections":[
+				],
+				"modules":[
+					'ngRoute',
+				],
+				"pages":[
+				],
+			}
+			return plugins.newFile(`app.json`, JSON.stringify(site), { src: true })
+				.pipe(gulp.dest(`./src`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/includes/header/header.html')) {
-			done()
-			return
-		}
-		const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href=".">Home</a>\n</nav>\n`
-		return plugins.newFile(`header.html`, str, { src: true })
-			.pipe(gulp.dest(`./src/includes/header`))
-	},
+		(done) => {
+			if (fileExists.sync('src/includes/header/header.html')) {
+				done()
+				return
+			}
+			const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href=".">Home</a>\n</nav>\n`
+			return plugins.newFile(`header.html`, str, { src: true })
+				.pipe(gulp.dest(`./src/includes/header`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/includes/header/header.scss')) {
-			done()
-			return
-		}
-		const str = `$header-color: black;\n$header-bg: lightgreen;\n$header-second-color: black;\n
+		(done) => {
+			if (fileExists.sync('src/includes/header/header.scss')) {
+				done()
+				return
+			}
+			const str = `$header-color: black;\n$header-bg: lightgreen;\n$header-second-color: black;\n
 body > header {\n\tcolor: $header-color;\n\tbackground: $header-bg;\n
 \th1 {\n\t\tmargin: 0;\n\t}\n\n\th2 {\n\t\tcolor: $header-second-color;\n\t}\n}\n
 body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-content: space-between;
 \talign-content: flex-start;\n\talign-items: flex-start;\n
 \t> *:not([hidden]) {\n\t\tdisplay: block;\n\t}\n}\n`
-		return plugins.newFile(`header.scss`, str, { src: true })
-			.pipe(gulp.dest(`./src/includes/header`))
-	},
+			return plugins.newFile(`header.scss`, str, { src: true })
+				.pipe(gulp.dest(`./src/includes/header`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/includes/head-includes.html')) {
-			done()
-			return
-		}
-		const str = `<meta charset="utf-8"/>
+		(done) => {
+			if (fileExists.sync('src/includes/head-includes.html')) {
+				done()
+				return
+			}
+			const str = `<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/${packageJson.name}/"/>
 <link rel="stylesheet" href="min.css"/>
@@ -832,19 +834,21 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 <script src="res/angular.min.js"></script>
 <script src="res/angular-route.min.js"></script>
 <script src="app.js"></script>\n`
-		return plugins.newFile(`head-includes.html`, str, { src: true })
-			.pipe(gulp.dest(`./src/includes`))
-	},
+			return plugins.newFile(`head-includes.html`, str, { src: true })
+				.pipe(gulp.dest(`./src/includes`))
+		},
 
-	(done) => {
-		if (fileExists.sync('src/pages/home.html')) {
-			done()
-			return
+		(done) => {
+			if (fileExists.sync('src/pages/home.html')) {
+				done()
+				return
+			}
+			const str = `<h2>Home</h2>\n`
+			return plugins.newFile(`home.html`, str, { src: true })
+				.pipe(gulp.dest(`./src/pages`))
 		}
-		const str = `<h2>Home</h2>\n`
-		return plugins.newFile(`home.html`, str, { src: true })
-			.pipe(gulp.dest(`./src/pages`))
-	},
+
+	),
 
 	plugins.cli([
 		`git status`,
