@@ -619,13 +619,12 @@ gulp.task('generate:page', gulp.series(
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`))
 		},
 		() => {
-			const str = `'use strict';\n\nangular.module('${argv.module}', [\n\t'ngRoute',\n])\n`
+			const str = `angular.module('${argv.module}', [\n\t'ngRoute',\n])\n`
 			return plugins.newFile('module.js', str, { src: true })
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`))
 		},
 		() => {
-			const str = `'use strict';\n
-angular.module('${argv.module}')
+			const str = `angular.module('${argv.module}')
 .config(['$routeProvider', function($routeProvider) {
 \t$routeProvider.when('/${argv.sectionCC}${argv.nameCC}/', {
 \t\ttemplateUrl: 'pages/${argv.sectionCC}${argv.nameCC}/${argv.nameCC}.html',
@@ -672,13 +671,12 @@ gulp.task('generate:component', gulp.series(
 				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`))
 		},
 		() => {
-			const str = `'use strict';\n\nangular.module('${argv.module}', [])\n`
+			const str = `angular.module('${argv.module}', [])\n`
 			return plugins.newFile('module.js', str, { src: true })
 				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`))
 		},
 		() => {
-			const str = `'use strict';\n
-angular.module('${argv.module}')
+			const str = `angular.module('${argv.module}')
 .component('${argv.module}', {
 \ttemplateUrl: 'components/${argv.sectionCC}${argv.name}/${argv.name}.html',
 \tcontrollerAs: '$ctrl',
