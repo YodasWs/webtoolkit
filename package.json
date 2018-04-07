@@ -15,6 +15,7 @@
 	"homepage": "https://github.com/YodasWs/webtoolkit#readme",
 	"devDependencies": {
 		"@mightyplow/sass-dedup-importer": "^1.1.1",
+		"@yodasws/gulp-htmllint": "<1.0.0",
 		"angular": "^1.6.4",
 		"angular-route": "^1.6.4",
 		"babel-plugin-transform-exponentiation-operator": "^6.24.1",
@@ -28,7 +29,6 @@
 		"gulp-concat": "^2.6.1",
 		"gulp-eslint": "^3.0.1",
 		"gulp-file": "^0.4.0",
-		"gulp-html-lint": "^0.0.2",
 		"gulp-htmlmin": "^3.0.0",
 		"gulp-load-plugins": "^1.5.0",
 		"gulp-order": "^1.1.1",

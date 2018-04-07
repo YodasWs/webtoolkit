@@ -23,6 +23,14 @@
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@mightyplow/sass-dedup-importer/-/sass-dedup-importer-1.1.1.tgz#53a8a91705b0d6058900b4e42acbcd3f6c9a2684"
 
+"@yodasws/gulp-htmllint@<1.0.0":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@yodasws/gulp-htmllint/-/gulp-htmllint-0.0.3.tgz#b95cc2871879a63b03e7b1f09344d527ef03bc23"
+  dependencies:
+    htmllint "<1.0.0"
+    text-table "^0.2.0"
+    through2 "^2.0.1"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -880,7 +888,7 @@ builtin-status-codes@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
 
-bulk-require@^1.0.0:
+bulk-require@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/bulk-require/-/bulk-require-1.0.1.tgz#cb3d039e698139a444fc574b261d6b3b2cf44c89"
   dependencies:
@@ -2178,14 +2186,6 @@ gulp-file@^0.4.0:
     through2 "^0.4.1"
     vinyl "^2.1.0"
 
-gulp-html-lint@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/gulp-html-lint/-/gulp-html-lint-0.0.2.tgz#71e6bcf2fb66988bb7a53bc688f5f24418eb8f98"
-  dependencies:
-    htmllint "^0.6.0"
-    text-table "^0.2.0"
-    through2 "^2.0.1"
-
 gulp-htmlmin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/gulp-htmlmin/-/gulp-htmlmin-3.0.0.tgz#19ea8002d1231d6b1f18a12d20f2a66a77770fb3"
@@ -2500,16 +2500,16 @@ html-minifier@^3.0.3:
     relateurl "0.2.x"
     uglify-js "3.1.x"
 
-htmllint@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/htmllint/-/htmllint-0.6.0.tgz#dbb006676dd66d767cb1b6bb875f08840b91998d"
+htmllint@<1.0.0:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/htmllint/-/htmllint-0.7.2.tgz#02e47416fa2dbeb30b5e2c3ed667e8a5407a8f34"
   dependencies:
-    bulk-require "^1.0.0"
-    htmlparser2 "^3.7.3"
-    lodash "^4.3.0"
-    promise "^7.1.1"
+    bulk-require "^1.0.1"
+    htmlparser2 "^3.9.2"
+    lodash "^4.17.4"
+    promise "^8.0.1"
 
-htmlparser2@^3.7.3:
+htmlparser2@^3.9.2:
   version "3.9.2"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.9.2.tgz#1bdf87acca0f3f9e53fa4fcceb0f4b4cbb00b338"
   dependencies:
@@ -3983,9 +3983,9 @@ progress@^1.1.8:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/progress/-/progress-1.1.8.tgz#e260c78f6161cdd9b0e56cc3e0a85de17c7a57be"
 
-promise@^7.1.1:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
+promise@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-8.0.1.tgz#e45d68b00a17647b6da711bf85ed6ed47208f450"
   dependencies:
     asap "~2.0.3"
 
