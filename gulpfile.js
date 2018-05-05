@@ -98,7 +98,7 @@ options = {
 		compact: true,
 		plugins: [
 			'transform-exponentiation-operator',
-//			'transform-remove-console'
+//			'transform-remove-console',
 		],
 		presets: [
 			'es2015',
@@ -150,7 +150,7 @@ options = {
 'no-var': 2,
 'semi': 0,
 
-		}
+		},
 	},
 	lintSass:{
 		files: {
@@ -246,9 +246,9 @@ options = {
 'space-between-parens': 1,
 'space-around-operator': 1,
 'trailing-semicolon': 2,
-'final-newline': 2
+'final-newline': 2,
 
-		}
+		},
 	},
 	lintHTML:{
 		useHtmllintrc: false,
@@ -287,7 +287,7 @@ options = {
 'tag-self-close': 'always',
 'title-no-dup': true,
 
-		}
+		},
 	},
 	prefixCSS:{
 		// more options at https://github.com/postcss/autoprefixer#options
@@ -401,7 +401,7 @@ options = {
 	},
 	ssi:{
 		root: 'src'
-	}
+	},
 }
 
 plugins.named = require('vinyl-named')
@@ -430,7 +430,7 @@ function runTasks(task) {
 
 	// Run each task
 	if (tasks.length) for (let i=0, k=tasks.length; i<k; i++) {
-		if (['lintHTML', 'lintSass', 'lintES'].indexOf(tasks[i]) !== -1) continue;
+		if (['lintHTML', 'lintSass', 'lintES'].indexOf(tasks[i]) !== -1) continue
 		let option = options[tasks[i]] || {}
 		if (option[fileType]) option = option[fileType]
 		stream = stream.pipe(plugins[tasks[i]](option))
@@ -461,7 +461,7 @@ function runTasks(task) {
 			'rmLines',
 			'prefixCSS',
 		],
-		fileType: 'css'
+		fileType: 'css',
 	},
 	{
 		name: 'build:js',
@@ -473,7 +473,7 @@ function runTasks(task) {
 			'replaceString',
 		],
 		dest: 'build/',
-		fileType: 'js'
+		fileType: 'js',
 	},
 	{
 		name: 'webpack:js',
@@ -485,7 +485,7 @@ function runTasks(task) {
 			'webpack',
 		],
 		dest: 'bundle/',
-		fileType: 'js'
+		fileType: 'js',
 	},
 	{
 		name: 'minify:js',
@@ -496,7 +496,7 @@ function runTasks(task) {
 			'compileJS',
 			'rmLines',
 		],
-		fileType: 'js'
+		fileType: 'js',
 	},
 	{
 		name: 'compile:html',
@@ -509,7 +509,7 @@ function runTasks(task) {
 			'ssi',
 			'compileHTML',
 		],
-		fileType: 'html'
+		fileType: 'html',
 	},
 	{
 		name: 'transfer:assets',
@@ -520,7 +520,7 @@ function runTasks(task) {
 			'./src/**/*.png',
 			'./src/**/*.ttf',
 		],
-		tasks: []
+		tasks: [],
 	}
 ].forEach((task) => {
 	gulp.task(task.name, () => {
@@ -552,7 +552,7 @@ gulp.task('lint:js', () => {
 	return gulp.src([
 		'src/**/*.js',
 		'!**/*.min.js',
-		'!**/min.js'
+		'!**/min.js',
 	])
 		.pipe(plugins.lintES(options.lintES))
 		.pipe(plugins.lintES.failOnError())
@@ -596,7 +596,7 @@ gulp.task('watch', () => {
 })
 
 gulp.task('serve', () => {
-	return gulp.src('./docs/')
+	return gulp.src(options.dest)
 		.pipe(plugins.webserver(options.webserver))
 })
 
