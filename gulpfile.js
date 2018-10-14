@@ -379,7 +379,7 @@ options = {
 						})
 					})
 				})
-				return `const modules = ${JSON.stringify(site.modules)}${requires}`
+				return `const modules = ${JSON.stringify(site.modules, null, '\t')}${requires}`
 			},
 			options:{
 				notReplaced: false
@@ -645,7 +645,7 @@ gulp.task('generate:page', gulp.series(
 				path: `${argv.sectionCC}${argv.nameCC}`,
 				module: argv.module,
 			})
-			return plugins.newFile(`app.json`, JSON.stringify(site), { src: true })
+			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`))
 		}
 	),
@@ -693,7 +693,7 @@ gulp.task('generate:component', gulp.series(
 				path: `${argv.sectionCC}${argv.name}`,
 				module: argv.module,
 			})
-			return plugins.newFile(`app.json`, JSON.stringify(site), { src: true })
+			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`))
 		}
 	),
@@ -790,7 +790,7 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 				"pages":[
 				],
 			}
-			return plugins.newFile(`app.json`, JSON.stringify(site), { src: true })
+			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`))
 		},
 
