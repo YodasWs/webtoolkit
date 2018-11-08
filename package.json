@@ -8,7 +8,10 @@
 		"type": "git",
 		"url": "git+https://github.com/YodasWs/webtoolkit.git"
 	},
-	"author": "Sam Grundman",
+	"author": {
+		"name": "Samuel B Grundman",
+		"url": "http://yodas.ws"
+	},
 	"bugs": {
 		"url": "https://github.com/YodasWs/webtoolkit/issues"
 	},

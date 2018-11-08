@@ -74,7 +74,6 @@ plugins = require('gulp-load-plugins')({
 	rename:{
 		'gulp-autoprefixer': 'prefixCSS',
 		'gulp-run-command': 'cli',
-		'gulp-html-lint': 'lintHTML',
 		'gulp-sass-lint': 'lintSass',
 		'gulp-htmlmin': 'compileHTML',
 		'gulp-eslint': 'lintES',
@@ -351,10 +350,10 @@ options = {
 			pattern:/\/\* app\.json \*\//,
 			replacement:()=>{
 				// Read app.json to build site!
-				let site = require('./src/app.json')
-				if (!site.modules) site.modules = ['ngRoute']
-				let requires = ''
-				;[
+				let site = require('./src/app.json');
+				if (!site.modules) site.modules = ['ngRoute'];
+				const requiredFiles = [];
+				[
 					{
 						prop:'pages',
 						pref:'page',
@@ -366,20 +365,34 @@ options = {
 				].forEach((p) => {
 					if (!site[p.prop]) site[p.prop] = []
 					site[p.prop].forEach((c) => {
-						site.modules.push(c.module || camelCase(p.pref, c.path))
-						;['module','routes','ctrl'].forEach((k) => {
-							let file = `${p.prop}/${c.path}`
-							if (file.substr(-1) !== '/') file += '/'
-							file += `${k}.js`
-							console.log(`checking for file ${file}`)
+						const module = c.module || camelCase(p.pref, c.path);
+						if (!site.modules.includes(module)); site.modules.push(module);
+						['module', 'ctrl'].forEach((k) => {
+							let file = `${p.prop}/${c.path}`;
+							if (file.substr(-1) !== '/') file += '/';
+							file += `${k}.js`;
+							console.log(`checking for file ${file}`);
 							try {
-								fs.accessSync(`./src/${file}`)
-								requires += `\nrequire('../src/${file}')`
+								fs.accessSync(`./src/${file}`);
+								requiredFiles.push(file);
 							} catch (e) {}
-						})
-					})
-				})
-				return `const modules = ${JSON.stringify(site.modules, null, '\t')}${requires}`
+						});
+					});
+				});
+				if (site.json) for (let i in site.json) {
+					try {
+						fs.accessSync(`./src/${site.json[i]}.json`);
+						requiredFiles[i] = `${site.json[i]}.json`;
+					} catch (e) {}
+				}
+				let requires = 'const json = {};\n';
+				for (const i in requiredFiles) {
+					if (Number.isNaN(Number.parseInt(i, 10))) {
+						requires += `json.${i} = `;
+					}
+					requires += `require('../src/${requiredFiles[i]}');\n`;
+				}
+				return `const modules = ${JSON.stringify(site.modules, null, '\t')};\n${requires}`;
 			},
 			options:{
 				notReplaced: false
@@ -404,7 +417,8 @@ options = {
 	},
 }
 
-plugins.named = require('vinyl-named')
+plugins.named = require('vinyl-named');
+plugins.lintHTML = require('@yodasws/gulp-htmllint');
 
 function runTasks(task) {
 	const fileType = task.fileType || 'static'
@@ -590,10 +604,10 @@ gulp.task('compile:js', gulp.series(
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'))
 
 gulp.task('watch', () => {
-	gulp.watch('./src/**/*.{sa,sc,c}ss', gulp.series('compile:sass'))
-	gulp.watch('./src/**/*.html', gulp.series('compile:html'))
-	gulp.watch('./src/**/*.js', gulp.series('compile:js'))
-})
+	gulp.watch('./src/**/*.{sa,sc,c}ss', gulp.series('compile:sass'));
+	gulp.watch('./src/**/*.{js,json}', gulp.series('compile:js'));
+	gulp.watch('./src/**/*.html', gulp.series('compile:html'));
+});
 
 gulp.task('serve', () => {
 	return gulp.src(options.dest)
@@ -729,7 +743,7 @@ gulp.task('init', gulp.series(
 <!--#include file="includes/head-includes.html" -->
 <title>${argv.name}</title>
 </head>
-<body ng-cloak>
+<body ng-cloak ng-controller="app">
 <!--#include file="includes/header/header.html" -->
 <main ng-view></main>
 </body>
@@ -762,13 +776,19 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 			}
 			const str = `/* app.json */\nangular.module('${camelCase(argv.name)}', modules)
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
-\t$locationProvider.html5Mode(false)
-\t$routeProvider.when('/', {\n\t\ttemplateUrl: 'pages/home.html',
-\t\tcontrollerAs: '$ctrl',\n\t\tcontroller() {
-\t\t\tangular.element('[ng-view]').attr('ng-view', 'pageHome')
-\t\t},
-\t})\n\t.otherwise({redirectTo: '/'})
-}])\n`
+	$locationProvider.html5Mode(false);
+	$routeProvider.when('/', {
+		templateUrl: 'pages/home.html',
+		controllerAs: '$ctrl',
+		controller() {
+			angular.element('[ng-view]').attr('ng-view', 'pageHome');
+		},
+	})
+		.otherwise({redirectTo: '/'});
+}])
+.controller('app', ['$rootScope', function($rootScope) {
+	$rootScope.json = json || {};
+}]);\n`
 			return plugins.newFile(`app.js`, str, { src: true })
 				.pipe(gulp.dest(`./src`))
 		},
