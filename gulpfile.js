@@ -366,11 +366,9 @@ options = {
 					if (!site[p.prop]) site[p.prop] = [];
 					site[p.prop].forEach((c) => {
 						const module = c.module || camelCase(p.pref, c.path);
-						if (!site.modules.includes(module)); site.modules.push(module);
+						if (!site.modules.includes(module)) site.modules.push(module);
 						['module', 'ctrl'].forEach((k) => {
-							let file = `${p.prop}/${c.path}`;
-							if (file.substr(-1) !== '/') file += '/';
-							file += `${k}.js`;
+							const file = path.join(p.prop, c.path, `${k}.js`);
 							console.log(`checking for file ${file}`);
 							try {
 								fs.accessSync(`./src/${file}`);
@@ -379,12 +377,21 @@ options = {
 						});
 					});
 				});
-				if (site.json) for (let i in site.json) {
-					try {
-						fs.accessSync(`./src/${site.json[i]}.json`);
-						requiredFiles[i] = `${site.json[i]}.json`;
-					} catch (e) {}
-				}
+				[
+					'json',
+					'js',
+				].forEach((prop) => {
+					if (site[prop]) for (const i in site[prop]) {
+						try {
+							fs.accessSync(`./src/${site[prop][i]}.${prop}`);
+							if (Number.isNaN(Number.parseInt(i, 10))) {
+								requiredFiles[i] = `${site[prop][i]}.${prop}`;
+							} else {
+								requiredFiles.push(`${site[prop][i]}.${prop}`);
+							}
+						} catch (e) {}
+					}
+				});
 				let requires = 'const json = {};\n';
 				for (const i in requiredFiles) {
 					if (Number.isNaN(Number.parseInt(i, 10))) {
@@ -434,7 +441,7 @@ function runTasks(task) {
 		'lintSass',
 		'lintES'
 	].forEach((task) => {
-		if (tasks.indexOf(task) != -1) {
+		if (tasks.includes(task)) {
 			let option = options[task] || {}
 			if (option[fileType]) option = option[fileType]
 			stream = stream.pipe(plugins[task](option))
@@ -447,7 +454,7 @@ function runTasks(task) {
 
 	// Run each task
 	if (tasks.length) for (let i=0, k=tasks.length; i<k; i++) {
-		if (['lintHTML', 'lintSass', 'lintES'].indexOf(tasks[i]) !== -1) continue
+		if (['lintHTML', 'lintSass', 'lintES'].includes(tasks[i])) continue
 		let option = options[tasks[i]] || {}
 		if (option[fileType]) option = option[fileType]
 		stream = stream.pipe(plugins[tasks[i]](option))
@@ -465,7 +472,6 @@ function runTasks(task) {
 		name: 'compile:sass',
 		src: [
 			'src/**/*.{sa,sc,c}ss',
-			'!src/scss/*.{sa,sc,c}ss',
 			'!**/*.min.css',
 			'!**/min.css'
 		],
@@ -882,7 +888,8 @@ gulp.task('compile:css', gulp.series('compile:sass'))
 gulp.task('default', gulp.series(
 	'lint',
 	'compile',
-	'serve'
-	// Bash on Windows can't do watch=>compile and livereload at the same time >_<
-//	,'watch'
+	gulp.parallel(
+		'serve',
+		'watch'
+	)
 ))
