@@ -326,6 +326,7 @@ const options = {
 	},
 
 	connect: {
+		root: 'docs',
 		fallback: 'index.html',
 		livereload: true,
 		port: argv.port,
