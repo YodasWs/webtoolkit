@@ -3,8 +3,8 @@
  */
 'use strict';
 
-const fs = require('fs')
-const packageJson = JSON.parse(fs.readFileSync('./package.json'))
+const fs = require('fs');
+const packageJson = JSON.parse(fs.readFileSync('./package.json'));
 
 function camelCase() {
 	return (
@@ -14,7 +14,7 @@ function camelCase() {
 	}).map((n, i) => {
 		if (i === 0) return n
 		return n.charAt(0).toUpperCase() + n.slice(1)
-	}).join('')
+	}).join('');
 }
 
 const argv = require('yargs')
@@ -31,8 +31,8 @@ const argv = require('yargs')
 			describe: 'The server port to listen to',
 			type: 'number',
 			default: 3000,
-			alias: 'p'
-		}
+			alias: 'p',
+		},
 	})
 	.command('compile', 'Compile all files and output to docs folder')
 	.command('generate:component', 'Generate a new component', {
@@ -64,13 +64,13 @@ const argv = require('yargs')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
 	.epilog(' ©2017 Samuel B Grundman')
-	.argv
+	.argv;
 
-const gulp = require('gulp'),
-	path = require('path'),
-	fileExists = require('file-exists'),
+const gulp = require('gulp');
+const path = require('path');
+const fileExists = require('file-exists');
 
-plugins = require('gulp-load-plugins')({
+const plugins = require('gulp-load-plugins')({
 	rename:{
 		'gulp-autoprefixer': 'prefixCSS',
 		'gulp-run-command': 'cli',
@@ -87,9 +87,10 @@ plugins = require('gulp-load-plugins')({
 			return cli.default
 		},
 	},
-}),
+});
+plugins['connect.reload'] = plugins.connect.reload;
 
-options = {
+const options = {
 	compileJS:{
 		comments: false,
 		minified: true,
@@ -323,14 +324,13 @@ options = {
 			path: 'min.js',
 		},
 	},
-	webserver: {
-		path: `/${packageJson.name}/`,
-		directoryListing: false,
-		defaultFile: 'index.html',
+
+	connect: {
 		fallback: 'index.html',
 		livereload: true,
 		port: argv.port,
 	},
+
 	sort: {
 		css: [
 			'scss/**/*.{sa,sc,c}ss',
@@ -425,46 +425,46 @@ options = {
 	ssi: {
 		root: 'src',
 	},
-}
+};
 
 plugins.named = require('vinyl-named');
 plugins.lintHTML = require('@yodasws/gulp-htmllint');
 
 function runTasks(task) {
-	const fileType = task.fileType || 'static'
-	let stream = gulp.src(task.src)
-	const tasks = task.tasks
+	const fileType = task.fileType || 'static';
+	let stream = gulp.src(task.src);
+	const tasks = task.tasks;
 
 	// Output Linting Results
-	;[
+	[
 		'lintHTML',
 		'lintSass',
 		'lintES'
 	].forEach((task) => {
 		if (tasks.includes(task)) {
-			let option = options[task] || {}
-			if (option[fileType]) option = option[fileType]
-			stream = stream.pipe(plugins[task](option))
-			stream = stream.pipe(plugins[task].format())
+			let option = options[task] || {};
+			if (option[fileType]) option = option[fileType];
+			stream = stream.pipe(plugins[task](option));
+			stream = stream.pipe(plugins[task].format());
 		}
-	})
+	});
 
 	// Init Sourcemaps
-	// stream = stream.pipe(plugins.sourcemaps.init())
+	// stream = stream.pipe(plugins.sourcemaps.init());
 
 	// Run each task
 	if (tasks.length) for (let i=0, k=tasks.length; i<k; i++) {
-		if (['lintHTML', 'lintSass', 'lintES'].includes(tasks[i])) continue
-		let option = options[tasks[i]] || {}
-		if (option[fileType]) option = option[fileType]
-		stream = stream.pipe(plugins[tasks[i]](option))
+		if (['lintHTML', 'lintSass', 'lintES'].includes(tasks[i])) continue;
+		let option = options[tasks[i]] || {};
+		if (option[fileType]) option = option[fileType];
+		stream = stream.pipe(plugins[tasks[i]](option));
 	}
 
 	// Write Sourcemap
-	// stream = stream.pipe(plugins.sourcemaps.write())
+	// stream = stream.pipe(plugins.sourcemaps.write());
 
 	// Output Files
-	return stream.pipe(gulp.dest(task.dest || options.dest))
+	return stream.pipe(gulp.dest(task.dest || options.dest));
 }
 
 ;[
@@ -483,6 +483,7 @@ function runTasks(task) {
 			'stripCssComments',
 			'rmLines',
 			'prefixCSS',
+			'connect.reload',
 		],
 		fileType: 'css',
 	},
@@ -518,6 +519,7 @@ function runTasks(task) {
 		tasks: [
 			'compileJS',
 			'rmLines',
+			'connect.reload',
 		],
 		fileType: 'js',
 	},
@@ -531,6 +533,7 @@ function runTasks(task) {
 			'lintHTML',
 			'ssi',
 			'compileHTML',
+			'connect.reload',
 		],
 		fileType: 'html',
 	},
@@ -558,7 +561,7 @@ gulp.task('lint:html', () => {
 		.pipe(plugins.lintHTML(options.lintHTML))
 		.pipe(plugins.lintHTML.failOnError())
 		.pipe(plugins.lintHTML.format())
-})
+});
 
 gulp.task('lint:sass', () => {
 	return gulp.src([
@@ -569,7 +572,7 @@ gulp.task('lint:sass', () => {
 		.pipe(plugins.lintSass(options.lintSass))
 		.pipe(plugins.lintSass.failOnError())
 		.pipe(plugins.lintSass.format())
-})
+});
 
 gulp.task('lint:js', () => {
 	return gulp.src([
@@ -580,7 +583,7 @@ gulp.task('lint:js', () => {
 		.pipe(plugins.lintES(options.lintES))
 		.pipe(plugins.lintES.failOnError())
 		.pipe(plugins.lintES.format())
-});
+});;
 
 gulp.task('lint', gulp.parallel('lint:sass', 'lint:js', 'lint:html'));
 
@@ -619,8 +622,7 @@ gulp.task('watch', () => {
 });
 
 gulp.task('serve', () => {
-	return gulp.src(options.dest)
-		.pipe(plugins.webserver(options.webserver));
+	return plugins.connect.server(options.connect);
 });
 
 gulp.task('generate:page', gulp.series(
@@ -726,7 +728,7 @@ gulp.task('generate:component', gulp.series(
 ));
 
 gulp.task('init:win', () => {
-})
+});
 
 gulp.task('init', gulp.series(
 	plugins.cli([
@@ -880,16 +882,16 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 	plugins.cli([
 		`git status`,
 	])
-))
+));
 
-gulp.task('compile:scss', gulp.series('compile:sass'))
-gulp.task('compile:css', gulp.series('compile:sass'))
+gulp.task('compile:scss', gulp.series('compile:sass'));
+gulp.task('compile:css', gulp.series('compile:sass'));
 
 gulp.task('default', gulp.series(
 	'lint',
 	'compile',
 	gulp.parallel(
 		'serve',
-		'watch'
+		'watch',
 	)
-))
+));
