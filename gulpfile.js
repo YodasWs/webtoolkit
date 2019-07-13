@@ -88,6 +88,7 @@ plugins = require('gulp-load-plugins')({
 		},
 	},
 }),
+plugins['connect.reload'] = plugins.connect.reload;
 
 options = {
 	compileJS:{
@@ -323,14 +324,13 @@ options = {
 			path: 'min.js',
 		},
 	},
-	webserver: {
-		path: `/${packageJson.name}/`,
-		directoryListing: false,
-		defaultFile: 'index.html',
+
+	connect: {
 		fallback: 'index.html',
 		livereload: true,
 		port: argv.port,
 	},
+
 	sort: {
 		css: [
 			'scss/**/*.{sa,sc,c}ss',
@@ -477,6 +477,7 @@ function runTasks(task) {
 			'stripCssComments',
 			'rmLines',
 			'prefixCSS',
+			'connect.reload',
 		],
 		fileType: 'css',
 	},
@@ -512,6 +513,7 @@ function runTasks(task) {
 		tasks: [
 			'compileJS',
 			'rmLines',
+			'connect.reload',
 		],
 		fileType: 'js',
 	},
@@ -525,6 +527,7 @@ function runTasks(task) {
 			'lintHTML',
 			'ssi',
 			'compileHTML',
+			'connect.reload',
 		],
 		fileType: 'html',
 	},
@@ -613,8 +616,7 @@ gulp.task('watch', () => {
 });
 
 gulp.task('serve', () => {
-	return gulp.src(options.dest)
-		.pipe(plugins.webserver(options.webserver));
+	return plugins.connect.server(options.connect);
 });
 
 gulp.task('generate:page', gulp.series(
@@ -882,7 +884,8 @@ gulp.task('compile:css', gulp.series('compile:sass'))
 gulp.task('default', gulp.series(
 	'lint',
 	'compile',
-	'serve'
-	// Bash on Windows can't do watch=>compile and livereload at the same time >_<
-//	,'watch'
-))
+	gulp.parallel(
+		'serve',
+		'watch',
+	)
+));
