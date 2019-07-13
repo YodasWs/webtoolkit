@@ -528,7 +528,7 @@ function runTasks(task) {
 		name: 'compile:html',
 		src: [
 			'./src/**/*.html',
-			'!**/includes/**/*.html'
+			'!**/includes/**/*.html',
 		],
 		tasks: [
 			'lintHTML',
