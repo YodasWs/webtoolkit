@@ -3866,6 +3866,11 @@ liftoff@^3.1.0:
     rechoir "^0.6.2"
     resolve "^1.1.7"
 
+litedom@^0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/litedom/-/litedom-0.11.1.tgz#9f2c3265d017b4210af91ce140fc02b14a6ddd5f"
+  integrity sha512-vUdeG9JyeT09HACFHY3NaRhmqvzHKvh4NttSbizaeGrMxHln6E2rYNz8rndb2Z/5eMLdtuzYEVApSSmNEUnYpg==
+
 livereload-js@^2.3.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/livereload-js/-/livereload-js-2.4.0.tgz#447c31cf1ea9ab52fc20db615c5ddf678f78009c"
@@ -5294,11 +5299,6 @@ relateurl@0.2.x:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
-
-relift-html@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/relift-html/-/relift-html-0.0.6.tgz#83b808d1fa6d14cceacdaa0973b788dff80b4e8f"
-  integrity sha512-TVtj0GjMTx2xller2YqRmzm1v1BPPnfUcyPQkHZXmV/+pKB2v7CAWvDfskIcQLdp0OpXP5pE6n5kfaC9NGorrg==
 
 remove-bom-buffer@^3.0.0:
   version "3.0.0"
