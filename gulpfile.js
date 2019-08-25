@@ -96,17 +96,29 @@ const plugins = {
 };
 plugins['connect.reload'] = plugins.connect.reload;
 
+// more options at https://github.com/postcss/autoprefixer#options
+const browsers = [
+	// browser strings detailed at https://github.com/ai/browserslist#queries
+	'last 2 Firefox versions',
+	'last 2 Chrome versions',
+	'Safari >= 10',
+	'ie_mob >= 11',
+	'ie >= 11'
+];
+
 const options = {
 	compileJS:{
 		comments: false,
 		minified: true,
 		babelrc: false,
 		compact: true,
-		plugins: [
-			'transform-exponentiation-operator',
-		],
 		presets: [
-			'es2015',
+			[
+				'@babel/preset-env',
+				{
+					targets: browsers,
+				},
+			],
 		]
 	},
 	compileSass:{
@@ -295,16 +307,8 @@ const options = {
 		},
 	},
 	prefixCSS:{
-		// more options at https://github.com/postcss/autoprefixer#options
-		browsers: [
-			// browser strings detailed at https://github.com/ai/browserslist#queries
-			'last 2 Firefox versions',
-			'last 2 Chrome versions',
-			'Safari >= 10',
-			'ie_mob >= 11',
-			'ie >= 11'
-		],
-		cascade: false
+		cascade: false,
+		browsers,
 	},
 	dest: 'docs/',
 	rmLines: {
