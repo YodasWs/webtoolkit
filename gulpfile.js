@@ -70,24 +70,30 @@ const gulp = require('gulp');
 const path = require('path');
 const fileExists = require('file-exists');
 
-const plugins = require('gulp-load-plugins')({
-	rename:{
-		'gulp-autoprefixer': 'prefixCSS',
-		'gulp-run-command': 'cli',
-		'gulp-sass-lint': 'lintSass',
-		'gulp-htmlmin': 'compileHTML',
-		'gulp-eslint': 'lintES',
-		'gulp-babel': 'compileJS',
-		'gulp-order': 'sort',
-		'gulp-sass': 'compileSass',
-		'gulp-file': 'newFile',
-	},
-	postRequireTransforms:{
-		cli(cli) {
-			return cli.default
+const plugins = {
+	...require('gulp-load-plugins')({
+		rename:{
+			'yodasws.gulp-pattern-replace': 'replaceString',
+			'gulp-autoprefixer': 'prefixCSS',
+			'gulp-run-command': 'cli',
+			'gulp-sass-lint': 'lintSass',
+			'gulp-htmlmin': 'compileHTML',
+			'gulp-eslint': 'lintES',
+			'gulp-babel': 'compileJS',
+			'gulp-order': 'sort',
+			'gulp-sass': 'compileSass',
+			'gulp-file': 'newFile',
 		},
-	},
-});
+		postRequireTransforms:{
+			cli(cli) {
+				return cli.default
+			},
+		},
+	}),
+	replaceString: require('@yodasws/gulp-pattern-replace'),
+	lintHTML: require('@yodasws/gulp-htmllint'),
+	named: require('vinyl-named'),
+};
 plugins['connect.reload'] = plugins.connect.reload;
 
 const options = {
@@ -427,9 +433,6 @@ const options = {
 		root: 'src',
 	},
 };
-
-plugins.named = require('vinyl-named');
-plugins.lintHTML = require('@yodasws/gulp-htmllint');
 
 function runTasks(task) {
 	const fileType = task.fileType || 'static';
