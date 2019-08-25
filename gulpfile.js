@@ -104,7 +104,6 @@ const options = {
 		compact: true,
 		plugins: [
 			'transform-exponentiation-operator',
-//			'transform-remove-console',
 		],
 		presets: [
 			'es2015',
@@ -357,7 +356,7 @@ const options = {
 			pattern:/\/\* app\.json \*\//,
 			replacement: () => {
 				// Read app.json to build site!
-				let site = require('./src/app.json');
+				const site = require('./src/app.json');
 				if (!site.modules) site.modules = ['ngRoute'];
 				const requiredFiles = [];
 				[
@@ -388,7 +387,7 @@ const options = {
 					'json',
 					'js',
 				].forEach((prop) => {
-					if (site[prop]) for (const i in site[prop]) {
+					if (site[prop]) Object.keys(site[prop]).forEach((i) => {
 						try {
 							fs.accessSync(`./src/${site[prop][i]}.${prop}`);
 							if (Number.isNaN(Number.parseInt(i, 10))) {
@@ -397,15 +396,15 @@ const options = {
 								requiredFiles.push(`${site[prop][i]}.${prop}`);
 							}
 						} catch (e) {}
-					}
+					});
 				});
 				let requires = 'const json = {};\n';
-				for (const i in requiredFiles) {
+				Object.keys(requiredFiles).forEach((i) => {
 					if (Number.isNaN(Number.parseInt(i, 10))) {
 						requires += `json.${i} = `;
 					}
 					requires += `require('../src/${requiredFiles[i]}');\n`;
-				}
+				});
 				return `const modules = ${JSON.stringify(site.modules, null, '\t')};\n${requires}`;
 			},
 			options:{
@@ -666,15 +665,15 @@ gulp.task('generate:page', gulp.series(
 			return plugins.newFile(`ctrl.js`, str, { src: true })
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
 		},
-		// TODO: Add to app.json
 		() => {
-			let site = require('./src/app.json');
+			// Add to app.json
+			const site = require('./src/app.json');
 			if (!site.pages) site.pages = [];
 			site.pages.push({
 				path: `${argv.sectionCC}${argv.nameCC}`,
 				module: argv.module,
 			});
-			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
+			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
 		}
 	),
@@ -714,15 +713,15 @@ gulp.task('generate:component', gulp.series(
 			return plugins.newFile('ctrl.js', str, { src: true })
 				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`));
 		},
-		// TODO: Add to app.json
 		() => {
-			let site = require('./src/app.json');
+			// Add to app.json
+			const site = require('./src/app.json');
 			if (!site.components) site.components = [];
 			site.components.push({
 				path: `${argv.sectionCC}${argv.name}`,
 				module: argv.module,
 			});
-			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
+			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
 		}
 	),
@@ -776,8 +775,8 @@ gulp.task('init', gulp.series(
 :root { font-family: 'Trebuchet MS', 'Open Sans', 'Helvetica Neue', sans-serif; }\n
 html {\n\theight: 100%;\n\twidth: 100%;\n\tbackground: whitesmoke;\n}\n
 body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 100%;\n\tbackground: white;\n\tborder: 0 none;\n
-@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
-> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
+\t@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
+\t> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
 a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 			return plugins.newFile(`main.scss`, str, { src: true })
@@ -789,22 +788,24 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 				done()
 				return
 			}
-			const str = `/* app.json */\nangular.module('${camelCase(argv.name)}', modules)
-.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
-	$locationProvider.html5Mode(false);
-	$routeProvider.when('/', {
-		templateUrl: 'pages/home.html',
-		controllerAs: '$ctrl',
-		controller() {
-			angular.element('[ng-view]').attr('ng-view', 'pageHome');
-		},
-	})
-		.otherwise({redirectTo: '/'});
-}])
-.controller('app', ['$rootScope', function($rootScope) {
-	$rootScope.json = json || {};
-}]);\n`
-			return plugins.newFile(`app.js`, str, { src: true })
+			const str = `/* app.json */
+// import Litedom from 'res/litedom.es.js';
+angular.module('${camelCase(argv.name)}', modules)
+\t.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
+\t	$locationProvider.html5Mode(false);
+\t	$routeProvider.when('/', {
+\t		templateUrl: 'pages/home.html',
+\t		controllerAs: '$ctrl',
+\t		controller() {
+\t			angular.element('[ng-view]').attr('ng-view', 'pageHome');
+\t		},
+\t	})
+\t		.otherwise({redirectTo: '/'});
+\t}])
+\t.controller('app', ['$rootScope', function($rootScope) {
+\t	$rootScope.json = json || {};
+\t}]);\n`
+			return plugins.newFile('app.js', str, { src: true })
 				.pipe(gulp.dest(`./src`))
 		},
 
@@ -825,7 +826,7 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 				pages:[
 				],
 			}
-			return plugins.newFile(`app.json`, JSON.stringify(site, null, '\t'), { src: true })
+			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`))
 		},
 
@@ -849,36 +850,34 @@ body > header {\n\tcolor: $header-color;\n\tbackground: $header-bg;\n
 \th1 {\n\t\tmargin: 0;\n\t}\n\n\th2 {\n\t\tcolor: $header-second-color;\n\t}\n}\n
 body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-content: space-between;
 \talign-content: flex-start;\n\talign-items: flex-start;\n
-\t> *:not([hidden]) {\n\t\tdisplay: block;\n\t}\n}\n`
+\t> *:not([hidden]) {\n\t\tdisplay: block;\n\t}\n}\n`;
 			return plugins.newFile(`header.scss`, str, { src: true })
-				.pipe(gulp.dest(`./src/includes/header`))
+				.pipe(gulp.dest(`./src/includes/header`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/includes/head-includes.html')) {
-				done()
-				return
+				done();
+				return;
 			}
-			const str = `<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<base href="/${packageJson.name}/"/>
-<link rel="stylesheet" href="min.css"/>
-<script src="res/jquery.min.js"></script>
+			const str = `<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="min.css" />
 <script src="res/angular.min.js"></script>
 <script src="res/angular-route.min.js"></script>
 <script src="app.js"></script>\n`
 			return plugins.newFile(`head-includes.html`, str, { src: true })
-				.pipe(gulp.dest(`./src/includes`))
+				.pipe(gulp.dest(`./src/includes`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/pages/home.html')) {
-				done()
-				return
+				done();
+				return;
 			}
-			const str = `<h2>Home</h2>\n`
+			const str = `<h2>Home</h2>\n`;
 			return plugins.newFile(`home.html`, str, { src: true })
-				.pipe(gulp.dest(`./src/pages`))
+				.pipe(gulp.dest(`./src/pages`));
 		}
 
 	),
