@@ -594,21 +594,25 @@ gulp.task('lint:js', () => {
 
 gulp.task('lint', gulp.parallel('lint:sass', 'lint:js', 'lint:html'));
 
-gulp.task('transfer:res', (done) => {
-	gulp.src([
-		'./node_modules/angular/angular.min.js{,.map}',
-		'./node_modules/angular-route/angular-route.min.js{,.map}',
-		// './node_modules/jquery/dist/jquery.min.{js,map}',
-	])
-		.pipe(gulp.dest(path.join(options.dest, 'res')));
-	gulp.src([
-		'./node_modules/font-awesome/fonts/fontawesome-webfont.*',
-	])
-		.pipe(gulp.dest(path.join(options.dest, 'fonts')));
-	done();
-});
+gulp.task('transfer:fonts', () => gulp.src([
+	'./node_modules/font-awesome/fonts/fontawesome-webfont.*',
+])
+	.pipe(gulp.dest(path.join(options.dest, 'fonts')))
+);
 
-gulp.task('transfer-files', gulp.parallel('transfer:assets', 'transfer:res'));
+gulp.task('transfer:res', () => gulp.src([
+	'./node_modules/litedom/dist/litedom.es.js',
+	'./node_modules/angular/angular.min.js',
+	'./node_modules/angular-route/angular-route.min.js',
+])
+	.pipe(gulp.dest(path.join(options.dest, 'res')))
+);
+
+gulp.task('transfer-files', gulp.parallel(
+	'transfer:assets',
+	'transfer:fonts',
+	'transfer:res',
+));
 
 gulp.task('bundle:js', gulp.series(
 	'build:js',
