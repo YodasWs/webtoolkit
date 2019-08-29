@@ -627,13 +627,20 @@ gulp.task('compile:js', gulp.series(
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'));
 
 gulp.task('watch', () => {
-	gulp.watch('./src/**/*.{sa,sc,c}ss', gulp.series('compile:sass'));
-	gulp.watch('./src/**/*.{js,json}', gulp.series('compile:js'));
-	gulp.watch('./src/**/*.html', gulp.series('compile:html'));
+	gulp.watch('./src/**/*.{sa,sc,c}ss', {
+		usePolling: true,
+	}, gulp.series('compile:sass'));
+	gulp.watch('./src/**/*.{js,json}', {
+		usePolling: true,
+	}, gulp.series('compile:js'));
+	gulp.watch('./src/**/*.html', {
+		usePolling: true,
+	}, gulp.series('compile:html'));
 });
 
-gulp.task('serve', () => {
-	return plugins.connect.server(options.connect);
+gulp.task('serve', (done) => {
+	plugins.connect.server(options.connect);
+	done();
 });
 
 gulp.task('generate:page', gulp.series(
