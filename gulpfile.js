@@ -601,6 +601,7 @@ gulp.task('transfer:fonts', () => gulp.src([
 );
 
 gulp.task('transfer:res', () => gulp.src([
+	'./lib/yodasws.js',
 	'./node_modules/litedom/dist/litedom.es.js',
 	'./node_modules/angular/angular.min.js',
 	'./node_modules/angular-route/angular-route.min.js',
@@ -626,16 +627,20 @@ gulp.task('compile:js', gulp.series(
 
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'));
 
-gulp.task('watch', () => {
+gulp.task('watch', (done) => {
 	gulp.watch('./src/**/*.{sa,sc,c}ss', {
 		usePolling: true,
 	}, gulp.series('compile:sass'));
+	gulp.watch('./lib/yodasws.js', {
+		usePolling: true,
+	}, gulp.series('transfer:res'));
 	gulp.watch('./src/**/*.{js,json}', {
 		usePolling: true,
 	}, gulp.series('compile:js'));
 	gulp.watch('./src/**/*.html', {
 		usePolling: true,
 	}, gulp.series('compile:html'));
+	done();
 });
 
 gulp.task('serve', (done) => {
@@ -805,6 +810,7 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
 			}
 			const str = `/* app.json */
 // import Litedom from 'res/litedom.es.js';
+/*
 angular.module('${camelCase(argv.name)}', modules)
 \t.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
 \t	$locationProvider.html5Mode(false);
@@ -819,7 +825,12 @@ angular.module('${camelCase(argv.name)}', modules)
 \t}])
 \t.controller('app', ['$rootScope', function($rootScope) {
 \t	$rootScope.json = json || {};
-\t}]);\n`
+\t}]);
+/**/
+yodasws.page('home').setRoute({
+	template: 'pages/home.html',
+	route: '/',
+});\n`
 			return plugins.newFile('app.js', str, { src: true })
 				.pipe(gulp.dest(`./src`))
 		},
@@ -878,6 +889,7 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 			const str = `<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="min.css" />
+<script src="res/yodasws.js"></script>
 <script src="res/angular.min.js"></script>
 <script src="res/angular-route.min.js"></script>
 <script src="app.js"></script>\n`
