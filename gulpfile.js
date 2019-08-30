@@ -667,21 +667,12 @@ gulp.task('generate:page', gulp.series(
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
 		},
 		() => {
-			const str = `angular.module('${argv.module}', [\n\t'ngRoute',\n]);\n`;
-			return plugins.newFile('module.js', str, { src: true })
-				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
-		},
-		() => {
-			const str = `angular.module('${argv.module}')
-.config(['$routeProvider', function($routeProvider) {
-\t$routeProvider.when('/${argv.sectionCC}${argv.nameCC}/', {
-\t\ttemplateUrl: 'pages/${argv.sectionCC}${argv.nameCC}/${argv.nameCC}.html',
-\t\tcontrollerAs: '$ctrl',
-\t\tcontroller() {
-\t\t\tangular.element('[ng-view]').attr('ng-view', '${argv.module}');
-\t\t},
-\t})
-}]);\n`;
+			const str = `yodasws.page('${argv.sectionCC}${argv.nameCC}').setRoute({
+	template: 'pages/${argv.sectionCC}${argv.nameCC}/${argv.nameCC}.html',
+	route: '/${argv.sectionCC}${argv.nameCC}/',
+}).on('load', () => {
+	console.log('Page loaded!');
+});\n`
 			return plugins.newFile(`ctrl.js`, str, { src: true })
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
 		},
