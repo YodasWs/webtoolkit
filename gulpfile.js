@@ -35,18 +35,6 @@ const argv = require('yargs')
 		},
 	})
 	.command('compile', 'Compile all files and output to docs folder')
-	.command('generate:component', 'Generate a new component', {
-		name: {
-			describe: 'Name for your new component',
-			required: true,
-			alias: 'n',
-		},
-		section: {
-			describe: 'Section under which to add component',
-			default: '',
-			alias: 's',
-		},
-	})
 	.command('generate:page', 'Generate a new page', {
 		name: {
 			describe: 'Name for your new page',
@@ -603,8 +591,6 @@ gulp.task('transfer:fonts', () => gulp.src([
 gulp.task('transfer:res', () => gulp.src([
 	'./lib/yodasws.js',
 	'./node_modules/litedom/dist/litedom.es.js',
-	'./node_modules/angular/angular.min.js',
-	'./node_modules/angular-route/angular-route.min.js',
 ])
 	.pipe(gulp.dest(path.join(options.dest, 'res')))
 );
@@ -693,54 +679,6 @@ gulp.task('generate:page', gulp.series(
 	])
 ));
 
-gulp.task('generate:component', gulp.series(
-	(done) => {
-		argv.sectionCC = argv.section ? camelCase(argv.section) + '/' : '';
-		argv.module = camelCase('comp', argv.sectionCC, argv.name);
-		done();
-	},
-	gulp.parallel(
-		() => {
-			return plugins.newFile(`${argv.name}.html`, '', { src: true })
-				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`));
-		},
-		() => {
-			const str = `${argv.name} {\n\t/* SCSS Goes Here */\n}\n`;
-			return plugins.newFile(`${argv.name}.scss`, str, { src: true })
-				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`));
-		},
-		() => {
-			const str = `angular.module('${argv.module}', []);\n`;
-			return plugins.newFile('module.js', str, { src: true })
-				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`));
-		},
-		() => {
-			const str = `angular.module('${argv.module}')
-.component('${argv.module}', {
-\ttemplateUrl: 'components/${argv.sectionCC}${argv.name}/${argv.name}.html',
-\tcontrollerAs: '$ctrl',
-\tcontroller() {\n\t},
-});\n`;
-			return plugins.newFile('ctrl.js', str, { src: true })
-				.pipe(gulp.dest(`./src/components/${argv.sectionCC}${argv.name}`));
-		},
-		() => {
-			// Add to app.json
-			const site = require('./src/app.json');
-			if (!site.components) site.components = [];
-			site.components.push({
-				path: `${argv.sectionCC}${argv.name}`,
-				module: argv.module,
-			});
-			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
-				.pipe(gulp.dest(`./src`));
-		}
-	),
-	plugins.cli([
-		`git status`,
-	])
-));
-
 gulp.task('init:win', () => {
 });
 
@@ -789,47 +727,30 @@ body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 1
 \t@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
 \t> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
-a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`
+a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`;
 			return plugins.newFile(`main.scss`, str, { src: true })
-				.pipe(gulp.dest(`./src`))
+				.pipe(gulp.dest(`./src`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/app.js')) {
-				done()
-				return
+				done();
+				return;
 			}
 			const str = `/* app.json */
 // import Litedom from 'res/litedom.es.js';
-/*
-angular.module('${camelCase(argv.name)}', modules)
-\t.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
-\t	$locationProvider.html5Mode(false);
-\t	$routeProvider.when('/', {
-\t		templateUrl: 'pages/home.html',
-\t		controllerAs: '$ctrl',
-\t		controller() {
-\t			angular.element('[ng-view]').attr('ng-view', 'pageHome');
-\t		},
-\t	})
-\t		.otherwise({redirectTo: '/'});
-\t}])
-\t.controller('app', ['$rootScope', function($rootScope) {
-\t	$rootScope.json = json || {};
-\t}]);
-/**/
 yodasws.page('home').setRoute({
 	template: 'pages/home.html',
 	route: '/',
-});\n`
+});\n`;
 			return plugins.newFile('app.js', str, { src: true })
-				.pipe(gulp.dest(`./src`))
+				.pipe(gulp.dest(`./src`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/app.json')) {
-				done()
-				return
+				done();
+				return;
 			}
 			const site = {
 				name: packageJson.name,
@@ -842,9 +763,9 @@ yodasws.page('home').setRoute({
 				],
 				pages:[
 				],
-			}
+			};
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
-				.pipe(gulp.dest(`./src`))
+				.pipe(gulp.dest(`./src`));
 		},
 
 		(done) => {
@@ -881,8 +802,6 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="min.css" />
 <script src="res/yodasws.js"></script>
-<script src="res/angular.min.js"></script>
-<script src="res/angular-route.min.js"></script>
 <script src="app.js"></script>\n`
 			return plugins.newFile(`head-includes.html`, str, { src: true })
 				.pipe(gulp.dest(`./src/includes`));
