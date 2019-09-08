@@ -20,3 +20,12 @@ yodasws.page('AboutUs').setRoute({
 	console.log('Page loaded!');
 });
 ```
+
+Set a custom 404 page to load for any route you haven't set:
+
+```javascript
+yodasws.page('404').setRoute({
+	template: 'pages/404.html',
+	route: '404',
+});
+```
