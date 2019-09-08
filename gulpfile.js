@@ -545,17 +545,16 @@ function runTasks(task) {
 	}
 ].forEach((task) => {
 	gulp.task(task.name, () => {
-		return runTasks(task)
-	})
-})
+		return runTasks(task);
+	});
+});
 
 gulp.task('lint:html', () => {
 	return gulp.src([
 		'src/**/*.html',
 	])
 		.pipe(plugins.lintHTML(options.lintHTML))
-		.pipe(plugins.lintHTML.failOnError())
-		.pipe(plugins.lintHTML.format())
+		.pipe(plugins.lintHTML.format());
 });
 
 gulp.task('lint:sass', () => {
@@ -565,8 +564,7 @@ gulp.task('lint:sass', () => {
 		'!**/min.css'
 	])
 		.pipe(plugins.lintSass(options.lintSass))
-		.pipe(plugins.lintSass.failOnError())
-		.pipe(plugins.lintSass.format())
+		.pipe(plugins.lintSass.format());
 });
 
 gulp.task('lint:js', () => {
@@ -576,9 +574,8 @@ gulp.task('lint:js', () => {
 		'!**/min.js',
 	])
 		.pipe(plugins.lintES(options.lintES))
-		.pipe(plugins.lintES.failOnError())
-		.pipe(plugins.lintES.format())
-});;
+		.pipe(plugins.lintES.format());
+});
 
 gulp.task('lint', gulp.parallel('lint:sass', 'lint:js', 'lint:html'));
 
