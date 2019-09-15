@@ -80,6 +80,7 @@ const plugins = {
 	}),
 	replaceString: require('@yodasws/gulp-pattern-replace'),
 	lintHTML: require('@yodasws/gulp-htmllint'),
+	webpack: require('webpack-stream'),
 	named: require('vinyl-named'),
 };
 plugins['connect.reload'] = plugins.connect.reload;
@@ -367,7 +368,6 @@ const options = {
 						if (!site.modules.includes(module)) site.modules.push(module);
 						['module', 'ctrl'].forEach((k) => {
 							const file = path.join(p.prop, c.path, `${k}.js`);
-							console.log(`checking for file ${file}`);
 							try {
 								fs.accessSync(`./src/${file}`);
 								requiredFiles.push(file);
@@ -405,19 +405,9 @@ const options = {
 		},
 	},
 	webpack: {
-		logs: {
-			enabled: false,
-		},
+		mode: 'production',
 		output: {
 			filename: '[name].js',
-		},
-		module: {
-			loaders: [
-				{
-					test: /\.json$/,
-					loader: 'json-loader',
-				},
-			],
 		},
 	},
 	ssi: {
