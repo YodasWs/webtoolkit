@@ -286,10 +286,10 @@ const options = {
 	'acronym','applet','basefont','big','blink','center','font','frame','frameset','isindex','noframes','marquee',
 	'style',
 ],
-'tag-close': true,
+'tag-close': false,
 'tag-name-lowercase': true,
 'tag-name-match': true,
-'tag-self-close': 'always',
+'tag-self-close': false,
 'title-no-dup': true,
 
 		},
@@ -349,7 +349,7 @@ const options = {
 			replacement: () => {
 				// Read app.json to build site!
 				const site = require('./src/app.json');
-				if (!site.modules) site.modules = ['ngRoute'];
+				if (!site.modules) site.modules = [];
 				const requiredFiles = [];
 				[
 					{
@@ -589,7 +589,7 @@ gulp.task('transfer:res', () => gulp.src([
 	'./lib/yodasws.js',
 	'./node_modules/litedom/dist/litedom.es.js',
 ])
-	.pipe(gulp.dest(path.join(options.dest, 'res')))
+	.pipe(gulp.dest(path.join(options.dest, 'res'))),
 );
 
 gulp.task('transfer-files', gulp.parallel(
@@ -600,12 +600,12 @@ gulp.task('transfer-files', gulp.parallel(
 
 gulp.task('bundle:js', gulp.series(
 	'build:js',
-	'webpack:js'
+	'webpack:js',
 ));
 
 gulp.task('compile:js', gulp.series(
 	'bundle:js',
-	'minify:js'
+	'minify:js',
 ));
 
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'));
@@ -640,7 +640,7 @@ gulp.task('generate:page', gulp.series(
 	},
 	gulp.parallel(
 		() => {
-			const str = `[ng-view='${argv.module}'] {\n\t/* SCSS Goes Here */\n}\n`;
+			const str = `[y-page='${argv.module}'] {\n\t/* SCSS Goes Here */\n}\n`;
 			return plugins.newFile(`${argv.nameCC}.scss`, str, { src: true })
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
 		},
@@ -694,28 +694,28 @@ gulp.task('init', gulp.series(
 
 		(done) => {
 			if (fileExists.sync('src/index.html')) {
-				done()
-				return
+				done();
+				return;
 			}
 			const str = `<!DOCTYPE html>
-<html lang="en-US" ng-app="${camelCase(argv.name)}">
+<html lang="en-US">
 <head>
 <!--#include file="includes/head-includes.html" -->
 <title>${argv.name}</title>
 </head>
-<body ng-cloak ng-controller="app">
+<body>
 <!--#include file="includes/header/header.html" -->
-<main ng-view></main>
+<main></main>
 </body>
-</html>\n`
+</html>\n`;
 			return plugins.newFile(`index.html`, str, { src: true })
-				.pipe(gulp.dest(`./src`))
+				.pipe(gulp.dest(`./src`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/main.scss')) {
-				done()
-				return
+				done();
+				return;
 			}
 			const str = `* { box-sizing: border-box; }\n
 :root { font-family: 'Trebuchet MS', 'Open Sans', 'Helvetica Neue', sans-serif; }\n
@@ -756,7 +756,6 @@ yodasws.page('home').setRoute({
 				sections:[
 				],
 				modules:[
-					'ngRoute',
 				],
 				pages:[
 				],
@@ -767,18 +766,18 @@ yodasws.page('home').setRoute({
 
 		(done) => {
 			if (fileExists.sync('src/includes/header/header.html')) {
-				done()
-				return
+				done();
+				return;
 			}
-			const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href=".">Home</a>\n</nav>\n`
+			const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href=".">Home</a>\n</nav>\n`;
 			return plugins.newFile(`header.html`, str, { src: true })
-				.pipe(gulp.dest(`./src/includes/header`))
+				.pipe(gulp.dest(`./src/includes/header`));
 		},
 
 		(done) => {
 			if (fileExists.sync('src/includes/header/header.scss')) {
-				done()
-				return
+				done();
+				return;
 			}
 			const str = `$header-color: black;\n$header-bg: lightgreen;\n$header-second-color: black;\n
 body > header {\n\tcolor: $header-color;\n\tbackground: $header-bg;\n
@@ -812,13 +811,13 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 			const str = `<h2>Home</h2>\n`;
 			return plugins.newFile(`home.html`, str, { src: true })
 				.pipe(gulp.dest(`./src/pages`));
-		}
+		},
 
 	),
 
 	plugins.cli([
 		`git status`,
-	])
+	]),
 ));
 
 gulp.task('compile:scss', gulp.series('compile:sass'));
@@ -830,5 +829,5 @@ gulp.task('default', gulp.series(
 	gulp.parallel(
 		'serve',
 		'watch',
-	)
+	),
 ));
