@@ -60,8 +60,9 @@ const fileExists = require('file-exists');
 
 const plugins = {
 	...require('gulp-load-plugins')({
-		rename:{
+		rename: {
 			'yodasws.gulp-pattern-replace': 'replaceString',
+			'gulp-htmllint': 'lintHTML',
 			'gulp-autoprefixer': 'prefixCSS',
 			'gulp-run-command': 'cli',
 			'gulp-sass-lint': 'lintSass',
@@ -72,21 +73,19 @@ const plugins = {
 			'gulp-sass': 'compileSass',
 			'gulp-file': 'newFile',
 		},
-		postRequireTransforms:{
+		postRequireTransforms: {
 			cli(cli) {
-				return cli.default
+				return cli.default;
 			},
 		},
 	}),
 	replaceString: require('@yodasws/gulp-pattern-replace'),
-	lintHTML: require('@yodasws/gulp-htmllint'),
 	webpack: require('webpack-stream'),
 	named: require('vinyl-named'),
 };
 plugins['connect.reload'] = plugins.connect.reload;
 
-// more options at https://github.com/postcss/autoprefixer#options
-const browsers = [
+const browserslist = [
 	// browser strings detailed at https://github.com/ai/browserslist#queries
 	'last 2 Firefox versions',
 	'last 2 Chrome versions',
@@ -105,7 +104,7 @@ const options = {
 			[
 				'@babel/preset-env',
 				{
-					targets: browsers,
+					targets: browserslist,
 				},
 			],
 		]
@@ -297,7 +296,7 @@ const options = {
 	},
 	prefixCSS:{
 		cascade: false,
-		browsers,
+		overrideBrowserslist: browserslist,
 	},
 	dest: 'docs/',
 	rmLines: {
@@ -430,7 +429,9 @@ function runTasks(task) {
 			let option = options[task] || {};
 			if (option[fileType]) option = option[fileType];
 			stream = stream.pipe(plugins[task](option));
-			stream = stream.pipe(plugins[task].format());
+			if (task !== 'lintHTML') {
+				stream = stream.pipe(plugins[task].format());
+			}
 		}
 	});
 
@@ -544,7 +545,7 @@ gulp.task('lint:html', () => {
 		'src/**/*.html',
 	])
 		.pipe(plugins.lintHTML(options.lintHTML))
-		.pipe(plugins.lintHTML.format());
+		// .pipe(plugins.lintHTML.format());
 });
 
 gulp.task('lint:sass', () => {
