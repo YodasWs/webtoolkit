@@ -51,7 +51,7 @@ const argv = require('yargs')
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
-	.epilog(' ©2017 Samuel B Grundman')
+	.epilog(' ©2017–2019 Samuel B Grundman')
 	.argv;
 
 const gulp = require('gulp');
@@ -62,7 +62,6 @@ const plugins = {
 	...require('gulp-load-plugins')({
 		rename: {
 			'yodasws.gulp-pattern-replace': 'replaceString',
-			'gulp-htmllint': 'lintHTML',
 			'gulp-autoprefixer': 'prefixCSS',
 			'gulp-run-command': 'cli',
 			'gulp-sass-lint': 'lintSass',
@@ -80,12 +79,14 @@ const plugins = {
 		},
 	}),
 	replaceString: require('@yodasws/gulp-pattern-replace'),
+	lintHTML: require('@yodasws/gulp-htmllint'),
 	webpack: require('webpack-stream'),
 	named: require('vinyl-named'),
 };
 plugins['connect.reload'] = plugins.connect.reload;
 
-const browserslist = [
+// more options at https://github.com/postcss/autoprefixer#options
+const browsers = [
 	// browser strings detailed at https://github.com/ai/browserslist#queries
 	'last 2 Firefox versions',
 	'last 2 Chrome versions',
@@ -104,7 +105,7 @@ const options = {
 			[
 				'@babel/preset-env',
 				{
-					targets: browserslist,
+					targets: browsers,
 				},
 			],
 		]
@@ -175,7 +176,7 @@ const options = {
 'no-color-keywords': 0,
 'no-color-literals': 1,
 'no-combinators': 0,
-'no-css-comments': 1,
+'no-css-comments': 0,
 'no-debug': 1,
 'no-disallowed-properties': 1,
 'no-duplicate-properties': [
@@ -183,7 +184,7 @@ const options = {
 		'display',
 	]}
 ],
-'no-empty-rulesets': 1,
+'no-empty-rulesets': 0,
 'no-extends': 0,
 'no-ids': 1,
 'no-important': 1,
@@ -231,7 +232,7 @@ const options = {
 'max-line-length': 0,
 'max-file-line-count': 0,
 'nesting-depth': [
-	1, { "max-depth": 4 }
+	1, { 'max-depth': 4 }
 ],
 'property-sort-order': 0,
 'pseudo-element': 1,
@@ -296,7 +297,7 @@ const options = {
 	},
 	prefixCSS:{
 		cascade: false,
-		overrideBrowserslist: browserslist,
+		browsers,
 	},
 	dest: 'docs/',
 	rmLines: {
@@ -338,7 +339,6 @@ const options = {
 		],
 		js: [
 			'js/**/*.js',
-			'**/module.js',
 			'{components,pages}/**/*.js',
 			'app.js',
 		],
@@ -349,7 +349,6 @@ const options = {
 			replacement: () => {
 				// Read app.json to build site!
 				const site = require('./src/app.json');
-				if (!site.modules) site.modules = [];
 				const requiredFiles = [];
 				[
 					{
@@ -364,9 +363,8 @@ const options = {
 					if (!site[p.prop]) site[p.prop] = [];
 					site[p.prop].forEach((c) => {
 						const module = c.module || camelCase(p.pref, c.path);
-						if (!site.modules.includes(module)) site.modules.push(module);
 						['module', 'ctrl'].forEach((k) => {
-							const file = path.join(p.prop, c.path, `${k}.js`);
+							const file = path.join(p.prop, c, `${k}.js`);
 							try {
 								fs.accessSync(`./src/${file}`);
 								requiredFiles.push(file);
@@ -396,7 +394,7 @@ const options = {
 					}
 					requires += `require('../src/${requiredFiles[i]}');\n`;
 				});
-				return `const modules = ${JSON.stringify(site.modules, null, '\t')};\n${requires}`;
+				return requires;
 			},
 			options:{
 				notReplaced: false,
@@ -429,9 +427,7 @@ function runTasks(task) {
 			let option = options[task] || {};
 			if (option[fileType]) option = option[fileType];
 			stream = stream.pipe(plugins[task](option));
-			if (task !== 'lintHTML') {
-				stream = stream.pipe(plugins[task].format());
-			}
+			stream = stream.pipe(plugins[task].format());
 		}
 	});
 
@@ -545,7 +541,7 @@ gulp.task('lint:html', () => {
 		'src/**/*.html',
 	])
 		.pipe(plugins.lintHTML(options.lintHTML))
-		// .pipe(plugins.lintHTML.format());
+		.pipe(plugins.lintHTML.format());
 });
 
 gulp.task('lint:sass', () => {
@@ -654,10 +650,7 @@ gulp.task('generate:page', gulp.series(
 			// Add to app.json
 			const site = require('./src/app.json');
 			if (!site.pages) site.pages = [];
-			site.pages.push({
-				path: `${argv.sectionCC}${argv.nameCC}`,
-				module: argv.module,
-			});
+			site.pages.push(`${argv.sectionCC}${argv.nameCC}`);
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
 		}
@@ -745,8 +738,6 @@ yodasws.page('home').setRoute({
 				components:[
 				],
 				sections:[
-				],
-				modules:[
 				],
 				pages:[
 				],
