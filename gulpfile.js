@@ -297,7 +297,7 @@ const options = {
 	},
 	prefixCSS:{
 		cascade: false,
-		browsers,
+		overrideBrowserslist: browsers,
 	},
 	dest: 'docs/',
 	rmLines: {
