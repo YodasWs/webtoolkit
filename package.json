@@ -1,17 +1,13 @@
 {
-	"name": "webtoolkit",
-	"private": true,
+	"name": "@yodasws/webtoolkit",
 	"version": "0.2.0-alpha",
-	"description": "Sam Grundman's Super Awesome Gulp Web Development Toolset",
+	"description": "Sam Grundman's Super Awesome Gulp Web Development Toolkit",
 	"main": "gulpfile.js",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/YodasWs/webtoolkit.git"
 	},
-	"author": {
-		"name": "Samuel B Grundman",
-		"url": "http://yodas.ws"
-	},
+	"author": "Samuel B Grundman (https://github.com/YodasWs/)",
 	"bugs": {
 		"url": "https://github.com/YodasWs/webtoolkit/issues"
 	},
@@ -45,5 +41,8 @@
 		"vinyl-named": "^1.1.0",
 		"webpack-stream": "^5.2.1",
 		"yargs": "^8.0.2"
+	},
+	"directories": {
+		"lib": "lib"
 	}
 }
