@@ -1,16 +1,18 @@
 # webtoolkit
-Gulp toolkit to quickly and easily set up a one-page web app using Angular 1.6 and jQuery
+Gulp toolkit to quickly and easily set up a Single Page Application
 
 ## Initialization
 
 ```bash
-git init foo
-cd foo
+yarn add --dev @yodas/webtoolkit
+```
 
-git pull git@github.com:YodasWs/webtoolkit.git
+Add to your `gulpfile.js`:
+```javascript
+require('node_modules/@yodasws/webtoolkit/gulpfile.js');
+```
 
-yarn
-
+```bash
 gulp init
 ```
 
