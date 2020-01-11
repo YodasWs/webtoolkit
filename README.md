@@ -4,7 +4,7 @@ Gulp toolkit to quickly and easily set up a Single Page Application
 ## Initialization
 
 ```bash
-yarn add --dev @yodas/webtoolkit
+yarn add --dev @yodasws/webtoolkit
 ```
 
 Add to your `gulpfile.js`:
