@@ -707,7 +707,17 @@ body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 1
 \t@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
 \t> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
-a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`;
+a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n
+@keyframes spinner {\n\t0% {\n\t\ttransform: rotate(0deg);\n\t}\n\t2% {\n\t\ttransform: rotate(0deg);\n\t}
+\t98% {\n\t\ttransform: rotate(calc(360deg * 5));\n\t}\n\t100% {\n\t\ttransform: rotate(calc(360deg * 5));\n\t}\n}\n
+#y-spinner {\n\tmargin: 0 auto;\n\ttext-align: center;\n\tposition: absolute;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n
+\t.spinner {\n\t\tdisplay: inline-block;\n\t\twidth: 100px;\n\t\theight: 100px;
+\t\tbackground: url('http://i.imgur.com/oSHLAzp.png') center center;\n\t\tbackground-size: contain;
+\t\ttransform-origin: 50% 50%;\n\t\tanimation: spinner 3s infinite alternate ease-in-out;\n\t\tcontent: '';\n\t}\n
+\t.spinner-center {\n\t\tdisplay: inline-block;\n\t\tposition: absolute;\n\t\tmargin-left: -100px;\n\t\twidth: 100px;\n\t\theight: 100px;
+\t\tbackground: url('http://i.imgur.com/u0BC2ZR.png') center center;\n\t\tbackground-size: contain;\n\t\tcontent: '';\n\t}\n
+\t.loading-text {\n\t\tposition: relative;\n\t\tz-index: 1;\n\t\tfont-size: 1.5rem;\n\t\tfont-family: "Comic Sans MS", cursive, sans-serif;
+\t\tmargin-left: 0.5em;\n\t}\n}\n`;
 			return plugins.newFile(`main.scss`, str, { src: true })
 				.pipe(gulp.dest(`./src`));
 		},
