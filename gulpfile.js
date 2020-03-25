@@ -749,7 +749,7 @@ yodasws.page('home').setRoute({
 				done();
 				return;
 			}
-			const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href=".">Home</a>\n</nav>\n`;
+			const str = `<header>\n\t<h1>${argv.name}</h1>\n</header>\n<nav hidden>\n\t<a href="#!/">Home</a>\n</nav>\n`;
 			return plugins.newFile(`header.html`, str, { src: true })
 				.pipe(gulp.dest(`./src/includes/header`));
 		},
