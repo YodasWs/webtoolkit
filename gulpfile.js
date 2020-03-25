@@ -574,7 +574,6 @@ gulp.task('transfer:fonts', () => gulp.src([
 
 gulp.task('transfer:res', () => gulp.src([
 	'./lib/yodasws.js',
-	'./node_modules/litedom/dist/litedom.es.js',
 ])
 	.pipe(gulp.dest(path.join(options.dest, 'res'))),
 );
@@ -719,7 +718,6 @@ a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n`;
 				return;
 			}
 			const str = `/* app.json */
-// import Litedom from 'res/litedom.es.js';
 yodasws.page('home').setRoute({
 	template: 'pages/home.html',
 	route: '/',
