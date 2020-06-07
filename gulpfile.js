@@ -61,7 +61,6 @@ const fileExists = require('file-exists');
 const plugins = {
 	...require('gulp-load-plugins')({
 		rename: {
-			'yodasws.gulp-pattern-replace': 'replaceString',
 			'gulp-autoprefixer': 'prefixCSS',
 			'gulp-run-command': 'cli',
 			'gulp-sass-lint': 'lintSass',
@@ -689,6 +688,11 @@ gulp.task('init', gulp.series(
 <body>
 <!--#include file="includes/header/header.html" -->
 <main></main>
+<div id="y-spinner">
+	<div class="spinner"></div>
+	<div class="spinner-center"></div>
+	<div class="loading-text">Loading&hellip;</div>
+</div>
 </body>
 </html>\n`;
 			return plugins.newFile(`index.html`, str, { src: true })
