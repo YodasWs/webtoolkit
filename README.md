@@ -3,17 +3,14 @@ Gulp toolkit to quickly and easily set up a Single Page Application
 
 ## Initialization
 
-```bash
-yarn add --dev @yodasws/webtoolkit
-```
-
-Add to your `gulpfile.js`:
-```javascript
-require('node_modules/@yodasws/webtoolkit/gulpfile.js');
-```
+Use the project as a repo template in GitHub [here|https://github.com/YodasWs/webtoolkit/generate].
 
 ```bash
-gulp init
+yarn
+
+vim package.json
+
+gulp init -n <site title>
 ```
 
 ## Tasks
