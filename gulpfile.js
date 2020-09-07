@@ -91,11 +91,11 @@ const browsers = [
 	'last 2 Chrome versions',
 	'Safari >= 10',
 	'ie_mob >= 11',
-	'ie >= 11'
+	'ie >= 11',
 ];
 
 const options = {
-	compileJS:{
+	compileJS: {
 		comments: false,
 		minified: true,
 		babelrc: false,
@@ -109,7 +109,7 @@ const options = {
 			],
 		]
 	},
-	compileSass:{
+	compileSass: {
 		importer: require('@mightyplow/sass-dedup-importer'),
 		outputStyle: 'compressed',
 		includePaths: [
@@ -117,10 +117,10 @@ const options = {
 			'src/scss',
 		],
 	},
-	stripCssComments:{
+	stripCssComments: {
 		preserve: false,
 	},
-	compileHTML:{
+	compileHTML: {
 		collapseWhitespace: true,
 		decodeEntities: true,
 		keepClosingSlash: true,
@@ -130,7 +130,7 @@ const options = {
 		removeStyleLinkTypeAttributes: true,
 		useShortDoctype: true,
 	},
-	lintES:{
+	lintES: {
 		parserOptions: {
 			sourceType: 'module',
 			ecmaVersion: 7,
@@ -157,7 +157,7 @@ const options = {
 
 		},
 	},
-	lintSass:{
+	lintSass: {
 		files: {
 			ignore: '**/*.min.css'
 		},
@@ -255,7 +255,7 @@ const options = {
 
 		},
 	},
-	prefixCSS:{
+	prefixCSS: {
 		cascade: false,
 		overrideBrowserslist: browsers,
 	},
@@ -274,7 +274,7 @@ const options = {
 			],
 		},
 	},
-	concat:{
+	concat: {
 		css: {
 			path: 'min.css',
 		},
@@ -356,7 +356,7 @@ const options = {
 				});
 				return requires;
 			},
-			options:{
+			options: {
 				notReplaced: false,
 			},
 		},
@@ -584,7 +584,8 @@ gulp.task('generate:page', gulp.series(
 		() => {
 			const str = `yodasws.page('${argv.sectionCC}${argv.nameCC}').setRoute({
 	template: 'pages/${argv.sectionCC}${argv.nameCC}/${argv.nameCC}.html',
-	route: '/${argv.sectionCC}${argv.nameCC}/',
+	canonicalRoute: '/${argv.sectionCC}${argv.nameCC}/',
+	route: '/${argv.sectionCC}${argv.nameCC}/?',
 }).on('load', () => {
 	console.log('Page loaded!');
 });\n`
@@ -598,11 +599,11 @@ gulp.task('generate:page', gulp.series(
 			site.pages.push(`${argv.sectionCC}${argv.nameCC}`);
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
-		}
+		},
 	),
 	plugins.cli([
 		`git status`,
-	])
+	]),
 ));
 
 gulp.task('init:win', () => {
