@@ -758,6 +758,16 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 				.pipe(gulp.dest(`./src/pages`));
 		},
 
+		(done) => {
+			if (fileExists.sync('src/pages/home.scss')) {
+				done();
+				return;
+			}
+			const str = `[y-page='home'] {\n\t/* SCSS Goes Here */\n}\n`;
+			return plugins.newFile(`home.scss`, str, { src: true })
+				.pipe(gulp.dest(`./src/pages`));
+		},
+
 	),
 
 	plugins.cli([
