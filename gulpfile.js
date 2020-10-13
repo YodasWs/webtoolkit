@@ -395,7 +395,8 @@ function runTasks(task) {
 		if (['lintSass', 'lintES'].includes(subtask)) return;
 		let option = options[subtask] || {};
 		if (option[fileType]) option = option[fileType];
-		stream = stream.pipe(plugins[subtask](option)).on('error', function () {
+		stream = stream.pipe(plugins[subtask](option)).on('error', function (error) {
+			console.error('Error!', error);
 			this.emit('end');
 		});
 	});
