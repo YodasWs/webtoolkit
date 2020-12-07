@@ -583,7 +583,7 @@ gulp.task('generate:page', gulp.series(
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
 		},
 		() => {
-			const str = `yodasws.page('${argv.sectionCC}${argv.nameCC}').setRoute({
+			const str = `yodasws.page('${argv.module}').setRoute({
 	template: 'pages/${argv.sectionCC}${argv.nameCC}/${argv.nameCC}.html',
 	canonicalRoute: '/${argv.sectionCC}${argv.nameCC}/',
 	route: '/${argv.sectionCC}${argv.nameCC}/?',
