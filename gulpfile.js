@@ -51,7 +51,7 @@ const argv = require('yargs')
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
-	.epilog(' ©2017–2019 Samuel B Grundman')
+	.epilog(' ©2017–2021 Samuel B Grundman')
 	.argv;
 
 const gulp = require('gulp');
