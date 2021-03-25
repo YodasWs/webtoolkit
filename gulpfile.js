@@ -639,7 +639,7 @@ gulp.task('init', gulp.series(
 </head>
 <body>
 <!--#include file="includes/header/header.html" -->
-<main></main>
+<main aria-live="polite"></main>
 <div id="y-spinner">
 	<div class="spinner"></div>
 	<div class="spinner-center"></div>
