@@ -5,7 +5,6 @@
 # Build directories
 bundle
 build
-docs
 
 # Logs
 logs

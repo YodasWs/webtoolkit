@@ -608,9 +608,6 @@ gulp.task('generate:page', gulp.series(
 	]),
 ));
 
-gulp.task('init:win', () => {
-});
-
 // TODO: Let's move all of this into a separate file.
 // Here we only need to check that other file exists, run it, then maybe delete it
 gulp.task('init', gulp.series(
