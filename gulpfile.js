@@ -421,7 +421,6 @@ function runTasks(task) {
 			'stripCssComments',
 			'rmLines',
 			'prefixCSS',
-			'connect.reload',
 		],
 		fileType: 'css',
 	},
@@ -457,7 +456,6 @@ function runTasks(task) {
 		tasks: [
 			'compileJS',
 			'rmLines',
-			'connect.reload',
 		],
 		fileType: 'js',
 	},
@@ -470,7 +468,6 @@ function runTasks(task) {
 		tasks: [
 			'ssi',
 			'compileHTML',
-			'connect.reload',
 		],
 		fileType: 'html',
 	},
@@ -520,7 +517,7 @@ gulp.task('transfer:fonts', () => gulp.src([
 );
 
 gulp.task('transfer:res', () => gulp.src([
-	'./lib/yodasws.js',
+	'./lib/*.js',
 ])
 	.pipe(gulp.dest(path.join(options.dest, 'res'))),
 );
@@ -542,20 +539,24 @@ gulp.task('compile:js', gulp.series(
 ));
 
 gulp.task('compile', gulp.parallel('compile:html', 'compile:js', 'compile:sass', 'transfer-files'));
+gulp.task('reload', (done) => {
+	gulp.src('docs/').pipe(plugins['connect.reload']());
+	done();
+});
 
 gulp.task('watch', (done) => {
 	gulp.watch('./src/**/*.{sa,sc,c}ss', {
 		usePolling: true,
-	}, gulp.series('compile:sass'));
-	gulp.watch('./lib/yodasws.js', {
+	}, gulp.series('compile:sass', 'reload'));
+	gulp.watch('./lib/*.js', {
 		usePolling: true,
-	}, gulp.series('transfer:res'));
+	}, gulp.series('transfer:res', 'reload'));
 	gulp.watch('./src/**/*.{js,json}', {
 		usePolling: true,
-	}, gulp.series('compile:js'));
+	}, gulp.series('compile:js', 'reload'));
 	gulp.watch('./src/**/*.html', {
 		usePolling: true,
-	}, gulp.series('compile:html'));
+	}, gulp.series('compile:html', 'reload'));
 	done();
 });
 
