@@ -47,6 +47,13 @@ const argv = require('yargs')
 			alias: 's',
 		},
 	})
+	.command('generate:section', 'Generate a new section', {
+		name: {
+			describe: 'Name for your new section',
+			required: true,
+			alias: 'n',
+		},
+	})
 	.command('lint', 'Lint all JavaScript and Sass/SCSS files')
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
@@ -600,6 +607,58 @@ gulp.task('generate:page', gulp.series(
 			const site = require('./src/app.json');
 			if (!site.pages) site.pages = [];
 			site.pages.push(`${argv.sectionCC}${argv.nameCC}`);
+			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
+				.pipe(gulp.dest(`./src`));
+		},
+	),
+	plugins.cli([
+		`git status`,
+	]),
+));
+
+gulp.task('generate:section', gulp.series(
+	(done) => {
+		argv.nameCC = camelCase(argv.name);
+		argv.module = camelCase('page', argv.nameCC);
+		done();
+	},
+	gulp.parallel(
+		() => {
+			const str = `[y-page='${argv.module}'] {\n\t/* SCSS Goes Here */\n}\n`;
+			return plugins.newFile(`${argv.nameCC}.scss`, str, { src: true })
+				.pipe(gulp.dest(`./src/pages/${argv.nameCC}`));
+		},
+		() => {
+			const str = `<h2>${argv.name}</h2>\n`;
+			return plugins.newFile(`${argv.nameCC}.html`, str, { src: true })
+				.pipe(gulp.dest(`./src/pages/${argv.nameCC}`));
+		},
+		() => {
+			const str = `yodasws.page('${argv.module}').setRoute({
+	title: '${argv.name}',
+	canonicalRoute: '/${argv.nameCC}/',
+	template(match, ...p) {
+		const path = p.join('/').replace(/\\/+/g, '/').replace(/^\\\/|\\\/$/g, '').split('/').filter(p => p != '');
+		if (path.length === 0) {
+			return 'pages/${argv.nameCC}/${argv.nameCC}.html';
+		}
+		return {
+			canonicalRoute: '/${argv.nameCC}/' + path.join('/') + '/',
+			template: 'pages/${argv.nameCC}/' + path.join('.') + '.html',
+		};
+	},
+	route: '/${argv.nameCC}(/.*)*',
+}).on('load', () => {
+	console.log('Page loaded!');
+});\n`
+			return plugins.newFile(`ctrl.js`, str, { src: true })
+				.pipe(gulp.dest(`./src/pages/${argv.nameCC}`));
+		},
+		() => {
+			// Add to app.json
+			const site = require('./src/app.json');
+			if (!site.pages) site.pages = [];
+			site.pages.push(`${argv.nameCC}`);
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
 		},
