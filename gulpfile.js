@@ -26,7 +26,15 @@ const argv = require('yargs')
 			alias: 'n',
 		},
 	})
-	.command(['serve', '*'], 'Compile files and start server', {
+	.command('*', 'Compile files, run the server, and watch for changes to files', {
+		port: {
+			describe: 'The server port to listen to',
+			type: 'number',
+			default: 3000,
+			alias: 'p',
+		},
+	})
+	.command(['serve'], 'Run server', {
 		port: {
 			describe: 'The server port to listen to',
 			type: 'number',
@@ -412,13 +420,15 @@ function runTasks(task) {
 	return stream.pipe(gulp.dest(task.dest || options.dest));
 }
 
-;[
+[
 	{
 		name: 'compile:sass',
 		src: [
 			'src/**/*.{sa,sc,c}ss',
+			'!src/scss/*.{sa,sc,c}ss',
+			'!src/txt/**/*.{sa,sc,c}ss',
 			'!**/*.min.css',
-			'!**/min.css'
+			'!**/min.css',
 		],
 		tasks: [
 			'lintSass',
@@ -597,7 +607,6 @@ gulp.task('generate:page', gulp.series(
 	canonicalRoute: '/${argv.sectionCC}${argv.nameCC}/',
 	route: '/${argv.sectionCC}${argv.nameCC}/?',
 }).on('load', () => {
-	console.log('Page loaded!');
 });\n`
 			return plugins.newFile(`ctrl.js`, str, { src: true })
 				.pipe(gulp.dest(`./src/pages/${argv.sectionCC}${argv.nameCC}`));
