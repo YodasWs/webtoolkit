@@ -79,18 +79,15 @@ const plugins = {
 			'yodasws.gulp-pattern-replace': 'replaceString',
 			'gulp-autoprefixer': 'prefixCSS',
 			'gulp-run-command': 'cli',
+			'gulp-dart-sass': 'compileSass',
 			'gulp-sass-lint': 'lintSass',
 			'gulp-htmlmin': 'compileHTML',
 			'gulp-eslint': 'lintES',
 			'gulp-babel': 'compileJS',
 			'gulp-order': 'sort',
-			'gulp-sass': 'compileSass',
 			'gulp-file': 'newFile',
 		},
 		postRequireTransforms: {
-			compileSass(compileSass) {
-				return compileSass(require('node-sass'));
-			},
 			cli(cli) {
 				return cli.default;
 			},
