@@ -68,14 +68,10 @@ If you want to add a page that doesn't require its own JavaScript or stylesheet 
 /<section name>/<page name>.html
 ```
 
-Then add the route information to the section's `ctrl.js` so the HTML file is loaded on request:
-```javascript
-yodasws.page('unique-section-page-name').setRoute({
-	title: 'Page inside Section',
-	template: 'pages/section_name/page_file.html',
-	canonicalRoute: '/section_name/page_name/',
-	route: '/section_name/page_name/?',
-});
+The section route controller is already set up to open up the pages in the browser:
+
+```
+/#!/<section_name>/<page_name>/
 ```
 
 ## Page JavaScript
