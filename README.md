@@ -32,18 +32,18 @@ gulp generate:page -n <page name> [-s <section name>]
 
 This will build a new blank page for your site, with the following files:
 ```
-/<page name>
-/<page name>/<page name>.html
-/<page name>/<page name>.scss
-/<page name>/ctrl.js
+src/pages/<page name>
+src/pages/<page name>/<page name>.html
+src/pages/<page name>/<page name>.scss
+src/pages/<page name>/ctrl.js
 ```
 
 Then when you run `generate:page` and include a `<section name>`, your page will be placed in a child folder inside the section folder:
 ```
-/<section name>/<page name>
-/<section name>/<page name>/<page name>.html
-/<section name>/<page name>/<page name>.scss
-/<section name>/<page name>/ctrl.js
+src/pages/<section name>/<page name>
+src/pages/<section name>/<page name>/<page name>.html
+src/pages/<section name>/<page name>/<page name>.scss
+src/pages/<section name>/<page name>/ctrl.js
 ```
 
 ### Sections
@@ -57,15 +57,15 @@ gulp generate:section -n <section name>
 This creates a new blank page for your site, with the following files,
 
 ```
-/<section name>
-/<section name>/index.html
-/<section name>/<section name>.scss
-/<section name>/ctrl.js
+src/pages/<section name>
+src/pages/<section name>/index.html
+src/pages/<section name>/<section name>.scss
+src/pages/<section name>/ctrl.js
 ```
 
 If you want to add a page that doesn't require its own JavaScript or stylesheet files, you can simply add an extra HTML file in the section folder:
 ```
-/<section name>/<page name>.html
+src/pages/<section name>/<page name>.html
 ```
 
 The section route controller is already set up to open up the pages in the browser:
