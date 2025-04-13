@@ -59,6 +59,16 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+package-lock.json
+
 # Yarn Integrity file
 .yarn-integrity
 
