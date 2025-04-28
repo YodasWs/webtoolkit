@@ -361,7 +361,7 @@ const options = {
 						} catch (e) {}
 					});
 				});
-				let requires = 'window.json = {};\n';
+				let requires = 'const json = {};\n';
 				Object.keys(requiredFiles).forEach((i) => {
 					if (Number.isNaN(Number.parseInt(i, 10))) {
 						requires += `json.${i} = `;
@@ -380,6 +380,19 @@ const options = {
 		output: {
 			filename: '[name].js',
 		},
+		module: {
+			rules: [
+				{
+					test: /\.mjs$/,
+					use: {
+						loader: 'babel-loader',
+						options: {
+							presets: ['@babel/preset-env'],
+						},
+					},
+				},
+			],
+		},
 	},
 	ssi: {
 		root: 'src',
@@ -394,24 +407,30 @@ function runTasks(task) {
 	(task.tasks || []).forEach((subtask) => {
 		let option = options[subtask] || {};
 		if (option[fileType]) option = option[fileType];
-		if (['lintSass', 'lintES'].includes(subtask)) {
-			stream = stream.pipe(plugins[subtask](option));
-			// Linting requires special formatting
-			stream = stream.pipe(plugins[subtask].format());
-			return;
-		}
 		if (subtask === 'compileSass') {
 			stream = stream.pipe(plugins[subtask].sync(option)).on('error', function (error) {
-				console.error('Error!');
-				console.log(JSON.stringify(error, '  '));
+				if (typeof error.messageFormatted === 'string') {
+					console.error('Error!', error.messageFormatted);
+				} else {
+					console.error('Error!');
+					console.log(JSON.stringify(error, '  '));
+				}
 				this.emit('end');
 			});
 			return;
 		}
 		stream = stream.pipe(plugins[subtask](option)).on('error', function (error) {
-			console.error('Error!', error);
+			if (typeof error.messageFormatted === 'string') {
+				console.error('Error!', error.messageFormatted);
+			} else {
+				console.error('Error!', error);
+			}
 			this.emit('end');
 		});
+		if (['lintSass', 'lintES'].includes(subtask)) {
+			// Linting requires special formatting
+			stream = stream.pipe(plugins[subtask].format());
+		}
 	});
 
 	// Output Files
@@ -840,8 +859,6 @@ gulp.task('compile:scss', gulp.series('compile:sass'));
 gulp.task('compile:css', gulp.series('compile:sass'));
 
 gulp.task('default', gulp.series(
-	// Sam,
-	// 'lint',
 	'compile',
 	gulp.parallel(
 		'serve',
