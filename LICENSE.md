@@ -1,12 +1,12 @@
 License Information
 ======
 
-&copy;2018&ndash;2022 Sam Grundman
+&copy;2018&ndash;2025 Samuel B Grundman
 
 MIT License
 ---
 
-Copyright (c) 2018-2022 Sam Grundman
+Copyright (c) 2018-2025 Samuel B Grundman
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

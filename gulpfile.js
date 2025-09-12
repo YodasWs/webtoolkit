@@ -334,7 +334,7 @@ const options = {
 						} catch (e) {}
 					});
 				});
-				let requires = 'const json = {};\n';
+				let requires = 'window.json = {};\n';
 				Object.keys(requiredFiles).forEach((i) => {
 					if (Number.isNaN(Number.parseInt(i, 10))) {
 						requires += `json.${i} = `;
