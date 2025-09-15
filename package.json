@@ -1,6 +1,6 @@
 {
 	"name": "@yodasws/webtoolkit",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "Sam Grundman's Super Awesome Gulp Web Development Toolkit",
 	"main": "gulpfile.js",
 	"repository": {
@@ -39,7 +39,7 @@
 		"vinyl-named": "^1.1.0",
 		"webpack": "^5.84.1",
 		"webpack-stream": "^7.0.0",
-		"yargs": "^16.2.0"
+		"yargs": "^18.0.0"
 	},
 	"directories": {
 		"lib": "lib"
