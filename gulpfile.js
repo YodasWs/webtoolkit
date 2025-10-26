@@ -337,10 +337,12 @@ const options = {
 				});
 				let requires = 'window.json = {};\n';
 				Object.keys(requiredFiles).forEach((i) => {
+					const reqPath = String(requiredFiles[i]).replace(/\\/g, '/');
 					if (Number.isNaN(Number.parseInt(i, 10))) {
-						requires += `json.${i} = `;
+						requires += `import ${i} from '../src/${reqPath}'; json.${i} = ${i};\n`;
+					} else {
+						requires += `import '../src/${reqPath}';\n`;
 					}
-					requires += `require('../src/${requiredFiles[i]}');\n`;
 				});
 				return requires;
 			},
@@ -557,7 +559,7 @@ gulp.task('watch', (done) => {
 	gulp.watch('./lib/*.js', {
 		usePolling: true,
 	}, gulp.series('transfer:res', 'reload'));
-	gulp.watch('./src/**/*.{js,json}', {
+	gulp.watch('./src/**/*.{js,mjs,json}', {
 		usePolling: true,
 	}, gulp.series('compile:js', 'reload'));
 	gulp.watch('./src/**/*.html', {

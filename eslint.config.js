@@ -3,6 +3,7 @@ const { defineConfig } = require('eslint/config');
 module.exports = defineConfig([
 	{
 		languageOptions: {
+			sourceType: 'module',
 			parserOptions: {
 				sourceType: 'module',
 				ecmaVersion: 2022,
