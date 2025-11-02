@@ -36,7 +36,7 @@ const argv = yargs(hideBin(process.argv))
 			alias: 'p',
 		},
 	})
-	.command(['serve'], 'Run server', {
+	.command('serve', 'Run server', {
 		port: {
 			describe: 'The server port to listen to',
 			type: 'number',
@@ -45,26 +45,28 @@ const argv = yargs(hideBin(process.argv))
 		},
 	})
 	.command('compile', 'Compile all files and output to docs folder')
-	.command('generate:page', 'Generate a new page', {
-		name: {
-			describe: 'Name for your new page',
-			required: true,
-			alias: 'n',
-		},
-		section: {
-			describe: 'Section under which to add page',
-			default: '',
-			alias: 's',
-		},
-	})
-	.command('generate:section', 'Generate a new section', {
-		name: {
-			describe: 'Name for your new section',
-			required: true,
-			alias: 'n',
-		},
-	})
+	.command('generate:page [section] <name>', 'Generate a new page', yargs => yargs.positional('section', {
+		describe: 'Section under which to add page',
+		required: false,
+		default: '',
+		alias: 's',
+	}).positional('name', {
+		describe: 'Name for your new page',
+		required: true,
+		alias: 'n',
+	}))
+	.command('generate:section <name>', 'Generate a new section', yargs => yargs.positional('name', {
+		describe: 'Name for your new section',
+		required: true,
+		alias: 'n',
+	}))
 	.command('lint', 'Lint all JavaScript and Sass/SCSS files')
+	.command('lint:js', 'Lint all JavaScript files')
+	.command('lint:css', 'Lint all Sass/SCSS files')
+	.command('test [files]', 'Run tests', yargs => yargs.positional('files', {
+		describe: 'Files or glob pattern of test files to run',
+		type: 'string',
+	}))
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
@@ -506,9 +508,20 @@ export function lintSass() {
 		.pipe(plugins.lintSass.format());
 };
 
+export function lintTests() {
+	return gulp.src([
+		argv.files || '{src,test}/**/*{-,.}test.{js,mjs}',
+		'!**/*.min.js',
+		'!**/min.js',
+	])
+		.pipe(plugins.lintES(options.lintES || {}))
+		.pipe(plugins.lintES.format());
+};
+
 export function lintJs() {
 	return gulp.src([
 		'src/**/*.{js,mjs}',
+		'!src/**/*{-,.}test.{js,mjs}',
 		'!src/json/**/*.mjs',
 		'!**/*.min.js',
 		'!**/min.js',
@@ -516,6 +529,9 @@ export function lintJs() {
 		.pipe(plugins.lintES(options.lintES || {}))
 		.pipe(plugins.lintES.format());
 };
+
+export { lintJs as 'lint:js' };
+export { lintSass as 'lint:css' };
 
 export const lint = gulp.parallel(lintSass, lintJs);
 
@@ -537,12 +553,23 @@ gulp.task('transfer-files', gulp.parallel(
 	'transfer:res',
 ));
 
+gulp.task('test:js', gulp.series(
+	plugins.cli([
+		`node --test ${argv.files || ''}`,
+	]),
+));
+
+gulp.task('test', gulp.parallel(
+	'test:js',
+));
+
 gulp.task('bundle:js', gulp.series(
 	'build:js',
 	'webpack:js',
 ));
 
 gulp.task('compile:js', gulp.series(
+	'test:js',
 	'bundle:js',
 	'minify:js',
 ));
