@@ -45,28 +45,35 @@ const argv = yargs(hideBin(process.argv))
 		},
 	})
 	.command('compile', 'Compile all files and output to docs folder')
-	.command('generate:page [section] <name>', 'Generate a new page', yargs => yargs.positional('section', {
-		describe: 'Section under which to add page',
-		required: false,
-		default: '',
-		alias: 's',
-	}).positional('name', {
-		describe: 'Name for your new page',
-		required: true,
-		alias: 'n',
-	}))
-	.command('generate:section <name>', 'Generate a new section', yargs => yargs.positional('name', {
-		describe: 'Name for your new section',
-		required: true,
-		alias: 'n',
-	}))
+	.command('generate:page', 'Generate a new page', {
+		section: {
+			describe: 'Section under which to add page',
+			required: false,
+			default: '',
+			alias: 's',
+		},
+		name: {
+			describe: 'Name for your new page',
+			required: true,
+			alias: 'n',
+		},
+	})
+	.command('generate:section', 'Generate a new section', {
+		name: {
+			describe: 'Name for your new section',
+			required: true,
+			alias: 'n',
+		},
+	})
 	.command('lint', 'Lint all JavaScript and Sass/SCSS files')
 	.command('lint:js', 'Lint all JavaScript files')
 	.command('lint:css', 'Lint all Sass/SCSS files')
-	.command('test [files]', 'Run tests', yargs => yargs.positional('files', {
-		describe: 'Files or glob pattern of test files to run',
-		type: 'string',
-	}))
+	.command('test', 'Run tests', {
+		files: {
+			describe: 'Files or glob pattern of test files to run',
+			type: 'string',
+		},
+	})
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
