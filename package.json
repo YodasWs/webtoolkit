@@ -1,6 +1,6 @@
 {
 	"name": "@yodasws/webtoolkit",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Sam Grundman's Super Awesome Gulp Web Development Toolkit",
 	"main": "gulpfile.js",
 	"type": "module",
@@ -56,5 +56,5 @@
 	"directories": {
 		"lib": "lib"
 	},
-	"packageManager": "yarn@4.9.1"
+	"packageManager": "yarn@4.12.0"
 }

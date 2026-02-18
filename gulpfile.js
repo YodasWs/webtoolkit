@@ -77,7 +77,7 @@ const argv = yargs(hideBin(process.argv))
 	.command('transfer-files', 'Transfer all static assets and resources to docs folder')
 	.command('watch', 'Watch files for changes to recompile')
 	.help('?')
-	.epilog(' ©2017–2025 Samuel B Grundman')
+	.epilog(' ©2017–2026 Samuel B Grundman')
 	.argv;
 
 import gulp from 'gulp';
@@ -111,6 +111,9 @@ plugins.replaceString = require('@yodasws/gulp-pattern-replace');
 plugins.webpack = require('webpack-stream');
 plugins.named = require('vinyl-named');
 plugins['connect.reload'] = plugins.connect.reload;
+
+
+import siteJson from './src/app.json' with { type: 'json' };
 
 import lintCss from '@yodasws/gulp-stylelint';
 plugins.lintCss = lintCss;
@@ -214,7 +217,7 @@ const options = {
 			pattern: /\/\* app\.json \*\//,
 			replacement: () => {
 				// Read app.json to build site!
-				const site = require('./src/app.json');
+				const site = siteJson;
 				const requiredFiles = [];
 				[
 					{
@@ -562,7 +565,7 @@ gulp.task('generate:page', gulp.series(
 		},
 		() => {
 			// Add to app.json
-			const site = require('./src/app.json');
+			const site = siteJson;
 			if (!site.pages) site.pages = [];
 			site.pages.push(`${argv.sectionCC}${argv.nameCC}`);
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
@@ -614,7 +617,7 @@ gulp.task('generate:section', gulp.series(
 		},
 		() => {
 			// Add to app.json
-			const site = require('./src/app.json');
+			const site = siteJson;
 			if (!site.pages) site.pages = [];
 			site.pages.push(`${argv.nameCC}`);
 			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
