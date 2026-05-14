@@ -112,8 +112,23 @@ plugins.webpack = require('webpack-stream');
 plugins.named = require('vinyl-named');
 plugins['connect.reload'] = plugins.connect.reload;
 
+// We need to create app.json if it doesn't exist yet
+if (!fileExists.sync('src/app.json')) {
+	fs.mkdirSync('src', { recursive: true });
+	const site = {
+		name: packageJson.name,
+		components:[
+		],
+		sections:[
+		],
+		pages:[
+		],
+	};
+	fs.writeFileSync('src/app.json', JSON.stringify(site, null, '\t'));
+}
 
-import siteJson from './src/app.json' with { type: 'json' };
+// Now we can read it to build our site!
+const siteJson = (() => JSON.parse(fs.readFileSync('./src/app.json')))();
 
 import lintCss from '@yodasws/gulp-stylelint';
 plugins.lintCss = lintCss;
@@ -705,24 +720,6 @@ yodasws.page('home').setRoute({
 	route: '/',
 });\n`;
 			return plugins.newFile('app.js', str, { src: true })
-				.pipe(gulp.dest(`./src`));
-		},
-
-		(done) => {
-			if (fileExists.sync('src/app.json')) {
-				done();
-				return;
-			}
-			const site = {
-				name: packageJson.name,
-				components:[
-				],
-				sections:[
-				],
-				pages:[
-				],
-			};
-			return plugins.newFile('app.json', JSON.stringify(site, null, '\t'), { src: true })
 				.pipe(gulp.dest(`./src`));
 		},
 
