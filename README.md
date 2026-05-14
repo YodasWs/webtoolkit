@@ -7,7 +7,7 @@ Use the project as a repo template in GitHub [here](https://github.com/YodasWs/w
 
 Then run the following command line instructions:
 ```bash
-yarn
+yarn set verion 4.x && yarn
 
 vim package.json # to edit your project URLs, name, etc.
 
