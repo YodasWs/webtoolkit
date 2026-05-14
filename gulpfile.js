@@ -440,7 +440,7 @@ function lintSass() {
 	]).pipe(plugins.lintCss(options.lintCss || {}));
 }
 
-export function lintTests() {
+function lintTests() {
 	return gulp.src([
 		argv.files || '{src,test}/**/*{-,.}test.{js,mjs}',
 		'!**/*.min.js',
@@ -464,8 +464,9 @@ function lintJs() {
 
 export { lintJs as 'lint:js' };
 export { lintSass as 'lint:css' };
+export { lintTests as 'lint:tests' };
 
-gulp.task('lint', gulp.parallel(lintSass, lintJs));
+gulp.task('lint', gulp.parallel(lintSass, lintJs, lintTests));
 
 gulp.task('transfer:fonts', () => gulp.src([
 	'./node_modules/font-awesome/fonts/fontawesome-webfont.*',
@@ -678,6 +679,7 @@ gulp.task('init', gulp.series(
 	<path d="M 0-40 A 40 40 0 1 1 0 40" />
 	<path d="M 0-40 A 40 40 0 1 0 0 40" />
 </svg>Loading&hellip;</div>
+<!--#include file="includes/footer/footer.html" -->
 </body>
 </html>\n`;
 			return plugins.newFile(`index.html`, str, { src: true })
@@ -692,8 +694,9 @@ gulp.task('init', gulp.series(
 			const str = `* { box-sizing: border-box; }\n
 :root { font-family: 'Trebuchet MS', 'Open Sans', 'Helvetica Neue', sans-serif; }\n
 html {\n\theight: 100%;\n\twidth: 100%;\n\tbackground: whitesmoke;\n}\n
-body {\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 100%;\n\tbackground: white;\n\tborder: 0 none;\n
+body {\n\tdisplay: flex;\n\tflex-flow: column nowrap;\n\tmargin: 0 auto;\n\twidth: 100%;\n\tmax-width: 1200px;\n\tmin-height: 100%;\n\tbackground: white;\n\tborder: 0 none;\n
 \t@media (min-width: 1201px) {\n\t\tborder: solid black;\n\t\tborder-width: 0 1px;\n\t}\n
+\t> #y-spinner,\n\t> main {\n\t\tflex-grow: 1;\n\t}\n
 \t> * {\n\t\tpadding: 5px calc(5px * 2.5);\n\t}\n}\n
 h1,\nh2,\nh3,\nh4,\nh5,\nh6 {\n\tmargin: 0;\n}\n
 a:link,\na:visited {\n\tcolor: dodgerblue;\n}\n
@@ -760,6 +763,33 @@ body > nav:not([hidden]) {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-
 <script src="app.js"></script>\n`
 			return plugins.newFile(`head-includes.html`, str, { src: true })
 				.pipe(gulp.dest(`./src/includes`));
+		},
+
+		(done) => {
+			if (fileExists.sync('src/includes/footer/footer.html')) {
+				done();
+				return;
+			}
+			const str = `<footer>
+<div>\n\t<p>Copyright &copy; ${new Date().getFullYear()} ${argv.name}</p>\n</div>
+<ul>\n\t<li><a href="#!/home/">Home</a></li>\n</ul>
+</footer>\n`
+			return plugins.newFile('footer.html', str, { src: true })
+				.pipe(gulp.dest('./src/includes/footer'));
+		},
+
+		(done) => {
+			if (fileExists.sync('src/includes/footer/footer.scss')) {
+				done();
+				return;
+			}
+			const str = `footer {
+\tdisplay: flex;\n\tflex-flow: row wrap;\n\tjustify-content: space-between;\n
+\t> ul {\n\t\tlist-style: none;\n\t\tmargin: 0;\n\t\tpadding: 0;\n\t}\n
+\tp {\n\t\tmargin-top: 0;\n\t}
+}\n`;
+			return plugins.newFile('footer.scss', str, { src: true })
+				.pipe(gulp.dest('./src/includes/footer'));
 		},
 
 		(done) => {
